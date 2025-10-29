@@ -16,4 +16,7 @@
 * frontend:
   * ! [react native](https://reactnative.dev/)
   * [flutter](https://flutter.dev/)
-  * [ripple](https://www.ripplejs.com/)
+  * [ripple](https://www.ripplejs.com/) 
+
+## Backend
+* run spring backend service from IDE and open http://localhost:8080/mono in your browser
