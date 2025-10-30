@@ -6,6 +6,7 @@
 
 ### As Docker Container
 ```shell
+./gradlew clean build
 TAG="travlr.backend:latest"
 docker build --tag=$TAG .
 docker run -p8080:8080 $TAG
