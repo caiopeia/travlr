@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
+
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
@@ -34,4 +36,10 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.named<BootBuildImage>("bootBuildImage") {
+    // see also https://hub.docker.com/u/paketobuildpacks?page=1
+    // and https://docs.spring.io/spring-boot/gradle-plugin/packaging-oci-image.html
+    runImage.set("paketobuildpacks/builder-noble-java-tiny")    // paketobuildpacks/ubuntu-noble-run-base:latest
 }

@@ -20,3 +20,7 @@
 
 ## Backend
 * run spring backend service from IDE and open http://localhost:8080/mono in your browser
+* to run in container
+```
+./gradlew :backend:bootBuildImage
+```
