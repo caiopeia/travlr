@@ -3,18 +3,17 @@
 ## Deploy
 * first build the jar (see [here](../backend/README.md#build-and-run-as-docker-container))
 * then run:
-```
-cd cdk
+```shell
 npm i
 npm run cdk deploy
 ```
 * if you never used CDK before
-```
+```shell
 npm run cdk bootstrap
 ```
 
 ## Destroy
-```
+```shell
 npm run cdk destroy
 ```
 

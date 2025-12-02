@@ -45,6 +45,11 @@ export class CdkStack extends Stack {
           "name": "Travlr is now with Spring Boot on Fargate",
         },
       },
+//       healthCheck: {
+//         // fixme replace by http://localhost:8080/actuator/health if possible in reactive env
+//         command: [ "CMD-SHELL", "curl -f http://localhost:8080/mono || exit 1" ],
+//         startPeriod: Duration.seconds(10),
+//       },
     });
     /*
     fargate.targetGroup.configureHealthCheck({
