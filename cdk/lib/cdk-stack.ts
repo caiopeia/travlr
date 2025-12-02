@@ -45,20 +45,26 @@ export class CdkStack extends Stack {
           "name": "Travlr is now with Spring Boot on Fargate",
         },
       },
-//       healthCheck: {
-//         // fixme replace by http://localhost:8080/actuator/health if possible in reactive env
-//         command: [ "CMD-SHELL", "curl -f http://localhost:8080/mono || exit 1" ],
-//         startPeriod: Duration.seconds(10),
-//       },
+      healthCheck: {
+        command: [
+            "CMD-SHELL",
+            // fixme replace by http://localhost:8080/actuator/health if possible in reactive env
+            "wget --no-verbose --tries=1 --spider http://localhost:80/mono || exit 1",
+            // ">> /proc/1/fd/1 2>&1" .. print logs alongside task logs > https://docs.aws.amazon.com/AmazonECS/latest/developerguide/view-container-health.html
+            // fixme move to README troubleshooting section
+            // "wget --no-verbose --tries=1 --spider http://localhost:80/mono >> /proc/1/fd/1 2>&1 || exit 1",
+        ],
+        startPeriod: Duration.seconds(30),
+        timeout: Duration.seconds(10),
+        retries: 2,
+      },
     });
-    /*
     fargate.targetGroup.configureHealthCheck({
-      path: "/mono",
-      port: "8080",
+      path: "/mono",    // fixme use actuator or so but not a domain specific endpoint
+      port: "80",
       healthyHttpCodes: "200",
       interval: Duration.seconds(30),
       protocol: Protocol.HTTP,
     })
-    */
   }
 }

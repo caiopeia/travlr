@@ -4,6 +4,7 @@
 * first build the jar (see [here](../backend/README.md#build-and-run-as-docker-container))
 * then run:
 ```shell
+cd cdk
 npm i
 npm run cdk deploy
 ```
