@@ -30,7 +30,7 @@ export class CdkStack extends Stack {
       platform: ecr_assets.Platform.LINUX_AMD64,  // force x86 system architecture as it used in AWS
     };
     const image = ecs.ContainerImage.fromAsset(
-      path.join(__dirname, '../../backend/'),
+      path.join(__dirname, '..', '..', 'backend'),
       assetImageProps,
     )
 
