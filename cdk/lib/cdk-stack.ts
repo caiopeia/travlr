@@ -26,8 +26,8 @@ export class CdkStack extends Stack {
     });
 
     const assetImageProps: ecs.AssetImageProps = {
-      //cacheDisabled: true,
-      platform: ecr_assets.Platform.LINUX_AMD64,  // force x86 system architecture
+      cacheDisabled: false,  // debug
+      platform: ecr_assets.Platform.LINUX_AMD64,  // force x86 system architecture as it used in AWS
     };
     const image = ecs.ContainerImage.fromAsset(
       path.join(__dirname, '../../backend/'),
@@ -44,15 +44,15 @@ export class CdkStack extends Stack {
         environment: {
           "name": "Travlr is now with Spring Boot on Fargate",
         },
+        containerPort: 80,
       },
       healthCheck: {
         command: [
             "CMD-SHELL",
             // fixme replace by http://localhost:8080/actuator/health if possible in reactive env
-            "wget --no-verbose --tries=1 --spider http://localhost:80/mono || exit 1",
-            // ">> /proc/1/fd/1 2>&1" .. print logs alongside task logs > https://docs.aws.amazon.com/AmazonECS/latest/developerguide/view-container-health.html
-            // fixme move to README troubleshooting section
-            // "wget --no-verbose --tries=1 --spider http://localhost:80/mono >> /proc/1/fd/1 2>&1 || exit 1",
+            "wget --no-verbose --tries=1 --spider http://localhost/mono || exit 1",
+            // debug: print to cloudwatch logs of container
+            // "wget --no-verbose --tries=1 --spider http://localhost/mono >> /proc/1/fd/1 2>&1 || exit 1",
         ],
         startPeriod: Duration.seconds(30),
         timeout: Duration.seconds(10),

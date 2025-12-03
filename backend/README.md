@@ -3,15 +3,15 @@
 * set JAVA_HOME env var to java 21 sdk
 ```shell
 ./gradlew :backend:clean :backend:build
-TAG="travlr.backend:latest"
+TAG="io.travlr.backend:latest"
 docker build --tag=$TAG backend
 docker run -it -p 80:80 $TAG
 ```
-* open http://localhost:80/mono in your browser
+* open http://localhost/mono in your browser
 * or in shell
 ```shell
-curl -f http://localhost:80/mono
-wget --no-verbose --tries=1 --spider http://localhost:80/mono
+curl -f http://localhost/mono
+wget --no-verbose --tries=1 --spider http://localhost/mono
 ```
 
 # DEBUG 

@@ -1,14 +1,14 @@
 # Travlr CDK TypeScript project
 
 ## Deploy
-* first build the jar (see [here](../backend/README.md#build-and-run-as-docker-container))
-* then run:
+* build the jar and deploy
 ```shell
+./gradlew :backend:clean :backend:build
 cd cdk
 npm i
 npm run cdk deploy
 ```
-* if you never used CDK before
+* if you never used CDK before you ll get an error which can be fixed by
 ```shell
 npm run cdk bootstrap
 ```
