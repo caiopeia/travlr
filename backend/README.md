@@ -7,11 +7,11 @@ TAG="io.travlr.backend:latest"
 docker build --tag=$TAG backend
 docker run -it -p 80:80 $TAG
 ```
-* open http://localhost/mono in your browser
+* open http://localhost/actuator/health in your browser
 * or in shell
 ```shell
-curl -f http://localhost/mono
-wget --no-verbose --tries=1 --spider http://localhost/mono
+curl -f http://localhost/actuator/health
+wget --no-verbose --tries=1 --spider http://localhost/actuator/health
 ```
 
 # DEBUG 

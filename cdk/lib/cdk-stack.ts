@@ -20,20 +20,17 @@ export class CdkStack extends Stack {
     const vpc = new ec2.Vpc(this, 'TravlrVpc', {
       maxAzs: 3,
     });
-
     const cluster = new ecs.Cluster(this, 'TravlrCluster', {
       vpc: vpc
     });
-
     const assetImageProps: ecs.AssetImageProps = {
       cacheDisabled: false,  // debug
-      platform: ecr_assets.Platform.LINUX_AMD64,  // force x86 system architecture as it used in AWS
+      platform: ecr_assets.Platform.LINUX_AMD64,  // force x86 system architecture as it used per default in AWS
     };
     const image = ecs.ContainerImage.fromAsset(
       path.join(__dirname, '..', '..', 'backend'),
       assetImageProps,
     )
-
     const fargate = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'TravlrFargateService', {
       cluster: cluster,
       cpu: 512,
@@ -49,10 +46,9 @@ export class CdkStack extends Stack {
       healthCheck: {
         command: [
             "CMD-SHELL",
-            // fixme replace by http://localhost:8080/actuator/health if possible in reactive env
-            "wget --no-verbose --tries=1 --spider http://localhost/mono || exit 1",
+            "wget --no-verbose --tries=1 --spider http://localhost/actuator/health || exit 1",
             // debug: print to cloudwatch logs of container
-            // "wget --no-verbose --tries=1 --spider http://localhost/mono >> /proc/1/fd/1 2>&1 || exit 1",
+            // "wget --no-verbose --tries=1 --spider http://localhost/actuator/health >> /proc/1/fd/1 2>&1 || exit 1",
         ],
         startPeriod: Duration.seconds(30),
         timeout: Duration.seconds(10),
@@ -60,7 +56,7 @@ export class CdkStack extends Stack {
       },
     });
     fargate.targetGroup.configureHealthCheck({
-      path: "/mono",    // fixme use actuator or so but not a domain specific endpoint
+      path: "/actuator/health",
       port: "80",
       healthyHttpCodes: "200",
       interval: Duration.seconds(30),

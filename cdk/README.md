@@ -1,13 +1,18 @@
 # Travlr CDK TypeScript project
 
 ## Deploy
-* build the jar and deploy
 ```shell
 ./gradlew :backend:clean :backend:build
 cd cdk
 npm i
 npm run cdk deploy
 ```
+* build the jar and deploy
+* after the deployment has finished successfully you can test the running instance from your browser
+  * therefore see the cdk output for `CdkStack.TravlrFargateServiceServiceURL`
+    * example: http://CdkSta-Travl-Ho9sG87J6vNo-1906300597.eu-west-1.elb.amazonaws.com
+  * open it inside your browser and reference for example the actuator health endpoint
+    * http://CdkSta-Travl-Ho9sG87J6vNo-1906300597.eu-west-1.elb.amazonaws.com/actuator/health
 * if you never used CDK before you ll get an error which can be fixed by
 ```shell
 npm run cdk bootstrap
