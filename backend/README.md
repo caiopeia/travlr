@@ -1,20 +1,21 @@
 # Backend
-## Run
-### As Docker Container
+## Build and Run As Docker Container
+* set JAVA_HOME env var to java 21 sdk
 ```shell
-./gradlew clean build
-TAG="travlr.backend:latest"
-docker build --tag=$TAG .
-docker run -it -p 8080:8080 $TAG
+./gradlew :backend:clean :backend:build
+TAG="io.travlr.backend:latest"
+docker build --tag=$TAG backend
+docker run -it -p 80:80 $TAG
 ```
-* open http://localhost:8080/mono in your browser
-
-## Create
-* [Working with the AWS CDK in TypeScript](https://docs.aws.amazon.com/cdk/v2/guide/work-with-cdk-typescript.html)
-### AWS Project
-```
-cdk init --language typescript
+* open http://localhost/actuator/health in your browser
+* or in shell
+```shell
+curl -f http://localhost/actuator/health
+wget --no-verbose --tries=1 --spider http://localhost/actuator/health
 ```
 
-## Deploy
-
+# DEBUG 
+* execute shell inside running container from another terminal
+```shell
+docker exec -it 19c93d87d157 /bin/sh
+```
