@@ -23,7 +23,7 @@ class HelloController {
 
     @GetMapping("/hello")
     fun getHello(): Mono<String?> = Mono.just<String?>(
-        "<textarea rows=\"67\" cols=\"300\">\n" +
+        "<textarea rows=\"75\" cols=\"220\" style=\"background-color:black; color:white; font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;\">\n" +
                 "          _______  _        _        _______                            \n" +
                 "|\\     /|(  ____ \\( \\      ( \\      (  ___  )                           \n" +
                 "| )   ( || (    \\/| (      | (      | (   ) |                           \n" +
