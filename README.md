@@ -3,6 +3,7 @@
   * friends
   * locations
   * photos
+* see [usecase Solo Traveller (MVP)](doc/usecases.md#solo-traveller-mvp)
 * see [use cases](doc/use_cases.drawio.png)
 
 ## Architecture
