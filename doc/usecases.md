@@ -1,10 +1,10 @@
 # Usecases
 ## Solo Traveller (MVP)
-* user oversees existing trips (overview)
-* user sees details for an existing trip
+* ([trip overview](ui/trip_overview.drawio.png)): user oversees existing trips
+* ([trip details](ui/trip_details.drawio.png)): user sees details for an existing trip
   * user shows an overview of all stations of the trip on a map
   * user shows the **photo**s per **station**
-* **user** creates a new **trip**
+* ([trip details](ui/trip_details.drawio.png)): **user** creates a new **trip**
   * user sets a description
   * user adds a station with location, timespan and name
   * user removes a station
