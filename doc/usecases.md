@@ -15,6 +15,9 @@
 * **user** removes **trip**
 
 ## Backlog
+* tagging
+  * a **station** can be tagged by multiple **tag**s `cultural`, `culinary` or `relaxing`
+  * a **trip**s tags is the set of all **tag**s of all **station**
 * user creates a trip from an existing trip
 * user imports **photo**s (picture with metadata like location and time)
   * this is an interactively guided import process
