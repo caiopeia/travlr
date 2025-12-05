@@ -1,22 +1,26 @@
 # Usecases
 ## Solo Traveller (MVP)
-* ([trip overview](ui/trip_overview.drawio.png)): user oversees existing trips
-* ([trip details](ui/trip_details.drawio.png)): user sees details for an existing trip
-  * user shows an overview of all stations of the trip on a map
-  * user shows the **photo**s per **station**
-* ([trip details](ui/trip_details.drawio.png)): **user** creates a new **trip**
-  * user sets a description
-  * user adds a station with location, timespan and name
-  * user removes a station
-  * user adds one or more photos for a station
-    * check for location and time if match between photo and station
-  * user removes a photo
-* **user** updates an existing **trip**
-* **user** removes an existing **trip**
+* [trips](ui/trips.drawio.png): **user** oversees existing **trip**s
+* [trip](ui/trip.drawio.png): **user** reads, creates or updates a **trip**
+  * **user** shows an overview of all **station**s of the **trip** on a map
+  * **user** shows the **photo**s per **station**
+  * **user** sets a _description_
+  * [station](ui/station.drawio.png): **user** reads, creates or updates a **station**
+    * **user** sets _location_, _timespan_, _name_ and _description_
+    * **user** sets one or more **photo**s for a **station**
+      * for MVP just a simple os file selection dialog for images
+      * [check for location and time if match between photo and station]
+    * **user** removes a **photo**
+  * **user** removes a **station**
+* **user** removes **trip**
 
 ## Backlog
 * user creates a trip from an existing trip
 * user imports **photo**s (picture with metadata like location and time)
+  * this is an interactively guided import process
+  * for each picture and grounded by location of the picture
+      * add to an existing station
+      * [propose a new station]
 * friends
   * user invites friends for a trip
   * user searches for friends
