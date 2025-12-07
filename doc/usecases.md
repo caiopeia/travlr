@@ -4,7 +4,7 @@
 * [trip](ui/trip.drawio.png): **user** reads, creates or updates a **trip**
   * **user** shows an overview of all **station**s of the **trip** on a map
   * **user** shows the **photo**s per **station**
-  * **user** sets a _description_
+  * **user** sets _name_ and _description_
   * [station](ui/station.drawio.png): **user** reads, creates or updates a **station**
     * **user** sets _location_, _timespan_, _name_ and _description_
     * **user** sets one or more **photo**s for a **station**

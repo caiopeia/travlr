@@ -4,10 +4,11 @@
   * locations
   * photos
 * see [usecase Solo Traveller (MVP)](doc/usecases.md#solo-traveller-mvp)
-* see [use cases](doc/use_cases.drawio.png)
+* see [use cases diagram](doc/use_cases.drawio.png)
 
 ## Architecture
 * see [diagram](doc/architecture-diagram.drawio.png)
+* see [entity diagram](doc/entities.drawio.png)
 * infrastructure:
   * [Architect for AWS Fargate for Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html)
   * [Creating an Amazon ECS Linux task for the Fargate with the AWS CLI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_AWSCLI_Fargate.html)
