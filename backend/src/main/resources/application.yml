@@ -1,6 +1,14 @@
 spring:
   application:
     name: travlr
+  database:
+
+  liquibase:
+    enabled: true
+    url: jdbc:postgresql://localhost:5432/travlr
+    user: travlr
+    password: travlr
+    change-log: classpath:db/changelog/db.changelog-master.yml
 server:
   port: 80
 logging:
