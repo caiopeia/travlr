@@ -1,8 +1,10 @@
 spring:
   application:
     name: travlr
-  database:
-
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/travlr
+    username: travlr
+    password: travlr
   liquibase:
     enabled: true
     url: jdbc:postgresql://localhost:5432/travlr
