@@ -21,8 +21,8 @@ import org.testcontainers.junit.jupiter.Testcontainers
 )
 @Testcontainers
 class TripIT(
-    @Autowired val tripRepository: TripRepository,
     @Autowired val webTestClient: WebTestClient,
+    @Autowired val tripRepository: TripRepository,
 ) {
     @BeforeEach
     fun beforeEach() {
@@ -67,6 +67,28 @@ class TripIT(
         assertThat(trip.id).isEqualTo(1)
         assertThat(trip.name).isEqualTo("Central America")
         assertThat(trip.description).isEqualTo("My trip to Central America")
+    }
+
+    @Test
+    fun `post`() {
+        val result: FluxExchangeResult<Trip> = webTestClient.post()
+            .uri("/api/trips")
+            .bodyValue(
+                Trip(
+                    name = "South America",
+                    description = "My trip to South America",
+                )
+            )
+            .exchange()
+            .expectStatus().isCreated
+            .returnResult(Trip::class.java)
+
+        val trip: Trip = result.responseBody
+            .single()   // extract only first element and throw error if zero or more than one
+            .block()!!  // end non blocking request and get result (throws exception on logs)
+        assertThat(trip.id).isEqualTo(2)
+        assertThat(trip.name).isEqualTo("South America")
+        assertThat(trip.description).isEqualTo("My trip to South America")
     }
 
     companion object {
