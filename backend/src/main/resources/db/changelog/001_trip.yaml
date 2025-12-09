@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 1
-      author: stefan.illgen@volkswagen.de
+      author: caiopeia
       changes:
         - createTable:
             tableName: trip
@@ -22,3 +22,13 @@ databaseChangeLog:
               - column:
                   name: description
                   type: varchar(999)
+  - changeSet:
+      id: 2
+      author: caiopeia
+      changes:
+        - loadData:
+            encoding: UTF-8
+            relativeToChangelogFile: true
+            file: 001_trip.csv
+            separator: ;
+            tableName: trip
