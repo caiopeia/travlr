@@ -29,6 +29,10 @@ dependencies {
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+    testImplementation("org.testcontainers:r2dbc:1.21.3")
+    testImplementation("org.testcontainers:postgresql:1.21.3")
+    testImplementation("org.testcontainers:junit-jupiter:1.21.3")
+    testImplementation("io.projectreactor:reactor-test:3.8.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
