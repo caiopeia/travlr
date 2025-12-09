@@ -24,4 +24,10 @@ class TripController(
     fun post(
         @RequestBody trip: Trip,
     ): Mono<Trip> = tripRepository.save(trip.copy(id = null))
+
+    @PutMapping("/{id}")
+    fun update(
+        @PathVariable id: Long,
+        @RequestBody trip: Trip,
+    ): Mono<Trip> = tripRepository.save(trip.copy(id = id))
 }

@@ -34,7 +34,7 @@ class TripIT(
         val result: FluxExchangeResult<Trip> = webTestClient.get()
             .uri("/api/trips")
             .exchange()
-            .expectStatus().isOk()
+            .expectStatus().isOk
             .returnResult(Trip::class.java)
 
         // A (assertj)
@@ -89,6 +89,28 @@ class TripIT(
         assertThat(trip.id).isEqualTo(2)
         assertThat(trip.name).isEqualTo("South America")
         assertThat(trip.description).isEqualTo("My trip to South America")
+    }
+
+    @Test
+    fun `put`() {
+        val result: FluxExchangeResult<Trip> = webTestClient.put()
+            .uri("/api/trips/{id}", 1)
+            .bodyValue(
+                Trip(
+                    name = "West America",
+                    description = "My trip to West America",
+                )
+            )
+            .exchange()
+            .expectStatus().isOk
+            .returnResult(Trip::class.java)
+
+        val trip: Trip = result.responseBody
+            .single()   // extract only first element and throw error if zero or more than one
+            .block()!!  // end non blocking request and get result (throws exception on logs)
+        assertThat(trip.id).isEqualTo(1)
+        assertThat(trip.name).isEqualTo("West America")
+        assertThat(trip.description).isEqualTo("My trip to West America")
     }
 
     companion object {
