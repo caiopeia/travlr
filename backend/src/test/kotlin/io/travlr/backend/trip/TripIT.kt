@@ -1,10 +1,7 @@
 package io.travlr.backend.trip
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.DynamicPropertyRegistry
@@ -20,6 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @Testcontainers
+@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TripIT(
     @Autowired val webTestClient: WebTestClient,
     @Autowired val tripRepository: TripRepository,
@@ -30,6 +28,7 @@ class TripIT(
     }
 
     @Test
+    @Order(1)
     fun `get all`() {
         val result: FluxExchangeResult<Trip> = webTestClient.get()
             .uri("/api/trips")
@@ -54,6 +53,7 @@ class TripIT(
     }
 
     @Test
+    @Order(2)
     fun `get`() {
         val result: FluxExchangeResult<Trip> = webTestClient.get()
             .uri("/api/trips/{id}", 1)
@@ -70,6 +70,7 @@ class TripIT(
     }
 
     @Test
+    @Order(3)
     fun `post`() {
         val result: FluxExchangeResult<Trip> = webTestClient.post()
             .uri("/api/trips")
@@ -80,7 +81,7 @@ class TripIT(
                 )
             )
             .exchange()
-            .expectStatus().isCreated
+            .expectStatus().isOk
             .returnResult(Trip::class.java)
 
         val trip: Trip = result.responseBody
@@ -92,6 +93,7 @@ class TripIT(
     }
 
     @Test
+    @Order(4)
     fun `put`() {
         val result: FluxExchangeResult<Trip> = webTestClient.put()
             .uri("/api/trips/{id}", 1)
@@ -111,6 +113,27 @@ class TripIT(
         assertThat(trip.id).isEqualTo(1)
         assertThat(trip.name).isEqualTo("West America")
         assertThat(trip.description).isEqualTo("My trip to West America")
+    }
+
+    @Test
+    @Order(5)
+    fun `delete`() {
+        assertThat(
+            tripRepository.findById(1).single().blockOptional()
+        ).isNotEmpty
+
+        val result = webTestClient.delete()
+            .uri("/api/trips/{id}", 1)
+            .exchange()
+            .expectStatus().isOk
+            .returnResult(Void::class.java)
+            .responseBody
+
+        assertThrows<NoSuchElementException>{
+            result.then(tripRepository.findById(1))
+                .single()
+                .block()
+        }
     }
 
     companion object {

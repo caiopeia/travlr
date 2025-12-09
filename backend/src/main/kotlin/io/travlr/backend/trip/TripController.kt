@@ -1,9 +1,8 @@
 package io.travlr.backend.trip
 
-import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.*
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
+    import org.springframework.web.bind.annotation.*
+    import reactor.core.publisher.Flux
+    import reactor.core.publisher.Mono
 
 
 @RestController
@@ -20,7 +19,6 @@ class TripController(
     ): Mono<Trip> = tripRepository.findById(id)
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     fun post(
         @RequestBody trip: Trip,
     ): Mono<Trip> = tripRepository.save(trip.copy(id = null))
@@ -30,4 +28,9 @@ class TripController(
         @PathVariable id: Long,
         @RequestBody trip: Trip,
     ): Mono<Trip> = tripRepository.save(trip.copy(id = id))
+
+    @DeleteMapping("/{id}")
+    fun delete(
+        @PathVariable id: Long,
+    ): Mono<Void> = tripRepository.deleteById(id)   // do not silently ignore non existing ids
 }
