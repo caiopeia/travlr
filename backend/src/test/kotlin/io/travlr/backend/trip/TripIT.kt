@@ -40,6 +40,7 @@ class TripIT(
         // A (assertj)
         val trips: List<Trip> = result.responseBody.toStream().toList()
         assertThat(trips).hasSize(1)
+        assertThat(trips[0].id).isEqualTo(1)
         assertThat(trips[0].name).isEqualTo("Central America")
         assertThat(trips[0].description).isEqualTo("My trip to Central America")
 
@@ -52,23 +53,27 @@ class TripIT(
 //            .verify()
     }
 
+    @Test
+    fun `get`() {
+        val result: FluxExchangeResult<Trip> = webTestClient.get()
+            .uri("/api/trips/{id}", 1)
+            .exchange()
+            .expectStatus().isOk()
+            .returnResult(Trip::class.java)
+
+        val trip: Trip = result.responseBody
+            .single()   // extract only first element and throw error if zero or more than one
+            .block()!!  // end non blocking request and get result (throws exception on logs)
+        assertThat(trip.id).isEqualTo(1)
+        assertThat(trip.name).isEqualTo("Central America")
+        assertThat(trip.description).isEqualTo("My trip to Central America")
+    }
+
     companion object {
 
         @Container
         @JvmStatic
         private val postgres = PostgreSQLContainer("postgres:18.1-alpine")
-
-        @BeforeAll
-        @JvmStatic
-        fun beforeAll() {
-            postgres.start()
-        }
-
-        @AfterAll
-        @JvmStatic
-        fun afterAll() {
-            postgres.stop()
-        }
 
         @JvmStatic
         @DynamicPropertySource
@@ -82,6 +87,18 @@ class TripIT(
             registry.add("spring.liquibase.url", postgres::getJdbcUrl);
             registry.add("spring.liquibase.user", postgres::getUsername);
             registry.add("spring.liquibase.password", postgres::getPassword);
+        }
+
+        @BeforeAll
+        @JvmStatic
+        fun beforeAll() {
+            postgres.start()
+        }
+
+        @AfterAll
+        @JvmStatic
+        fun afterAll() {
+            postgres.stop()
         }
     }
 }
