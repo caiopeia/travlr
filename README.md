@@ -1,5 +1,5 @@
 # Travlr
-* is an app to support travelers
+* is an app to support travellers
   * friends
   * locations
   * photos
