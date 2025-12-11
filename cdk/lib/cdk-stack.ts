@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import {
   aws_ec2 as ec2,
   aws_ecs as ecs,
+  aws_rds as rds,
   aws_ecs_patterns as ecs_patterns,
   aws_ecr_assets as ecr_assets,
   Duration,
@@ -10,6 +11,7 @@ import {
 } from 'aws-cdk-lib';
 import * as path from "path";
 import {Protocol} from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import { PostgresEngineVersion } from 'aws-cdk-lib/aws-rds';
 
 export class CdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -19,7 +21,48 @@ export class CdkStack extends Stack {
 
     const vpc = new ec2.Vpc(this, 'TravlrVpc', {
       maxAzs: 3,
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'ingress',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          cidrMask: 24,
+          name: 'service',
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        },
+        {
+          cidrMask: 28,
+          name: 'rds',
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+        },
+      ],
     });
+
+    const instanceIdentifier = 'postgres-18-1'
+    const credsSecretName = `/RdsInitExample/rds/creds/${instanceIdentifier}`.toLowerCase()
+    const creds = new rds.DatabaseSecret(this, 'MysqlRdsCredentials', {
+      secretName: credsSecretName,
+      username: 'travlr',
+    })
+    const dbServer = new rds.DatabaseInstance(this, 'MysqlRdsInstance', {
+      vpcSubnets: {
+        onePerAz: true,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+      },
+      credentials: rds.Credentials.fromSecret(creds),
+      vpc: vpc,
+      port: 5432,
+      databaseName: 'travlr',
+      allocatedStorage: 20,
+      instanceIdentifier,
+      engine: rds.DatabaseInstanceEngine.postgres({
+        version: PostgresEngineVersion.VER_18_1,
+      }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO)
+    });
+
     const cluster = new ecs.Cluster(this, 'TravlrCluster', {
       vpc: vpc
     });
@@ -62,5 +105,11 @@ export class CdkStack extends Stack {
       interval: Duration.seconds(30),
       protocol: Protocol.HTTP,
     })
+    // manage resources dependency
+//     fargate.cluster.node.addDependency(dbServer)
+    // allow the initializer function to connect to the RDS instance
+    dbServer.connections.allowFrom(fargate.service, ec2.Port.tcp(5432))
+    // allow initializer function to read RDS instance creds secret
+//         creds.grantRead(initializer.function)
   }
 }
