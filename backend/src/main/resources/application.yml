@@ -1,15 +1,19 @@
 spring:
   application:
     name: travlr
+  datasource:
+    url: postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/travlr
-    username: travlr
-    password: travlr
+    url: r2dbc:${spring.datasource.url}
+    username: ${spring.datasource.user}
+    password: ${spring.datasource.password}
   liquibase:
     enabled: true
-    url: jdbc:postgresql://localhost:5432/travlr
-    user: travlr
-    password: travlr
+    url: jdbc:${spring.datasource.url}
+    user: ${spring.datasource.user}
+    password: ${spring.datasource.password}
     change-log: classpath:db/changelog/db.changelog-master.yml
 server:
   port: 80

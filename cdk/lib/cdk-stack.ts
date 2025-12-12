@@ -41,9 +41,9 @@ export class CdkStack extends Stack {
     });
 
     const instanceIdentifier = 'postgres-18-1'
-    const credsSecretName = `/RdsInitExample/rds/creds/${instanceIdentifier}`.toLowerCase()
-    const creds = new rds.DatabaseSecret(this, 'MysqlRdsCredentials', {
-      secretName: credsSecretName,
+    const credentialsSecretName = `/RdsInitExample/rds/creds/${instanceIdentifier}`.toLowerCase()
+    const credentials = new rds.DatabaseSecret(this, 'MysqlRdsCredentials', {
+      secretName: credentialsSecretName,
       username: 'travlr',
     })
     const dbServer = new rds.DatabaseInstance(this, 'MysqlRdsInstance', {
@@ -51,7 +51,7 @@ export class CdkStack extends Stack {
         onePerAz: true,
         subnetType: ec2.SubnetType.PRIVATE_ISOLATED
       },
-      credentials: rds.Credentials.fromSecret(creds),
+      credentials: rds.Credentials.fromSecret(credentials),
       vpc: vpc,
       port: 5432,
       databaseName: 'travlr',
@@ -60,7 +60,10 @@ export class CdkStack extends Stack {
       engine: rds.DatabaseInstanceEngine.postgres({
         version: PostgresEngineVersion.VER_18_1,
       }),
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO)
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
+      parameters: {
+        "rds.force_ssl": "0", // allow client access without ssh
+      },
     });
 
     const cluster = new ecs.Cluster(this, 'TravlrCluster', {
@@ -84,6 +87,13 @@ export class CdkStack extends Stack {
         environment: {
           "name": "Travlr is now with Spring Boot on Fargate",
         },
+        secrets: {
+          "DB_HOST": ecs.Secret.fromSecretsManager(credentials, 'host'),
+          "DB_PORT": ecs.Secret.fromSecretsManager(credentials, 'port'),
+          "DB_NAME": ecs.Secret.fromSecretsManager(credentials, 'dbname'),
+          "DB_USER": ecs.Secret.fromSecretsManager(credentials, 'username'),
+          "DB_PASSWORD": ecs.Secret.fromSecretsManager(credentials, 'password'),
+        },
         containerPort: 80,
       },
       healthCheck: {
@@ -105,11 +115,8 @@ export class CdkStack extends Stack {
       interval: Duration.seconds(30),
       protocol: Protocol.HTTP,
     })
-    // manage resources dependency
-//     fargate.cluster.node.addDependency(dbServer)
-    // allow the initializer function to connect to the RDS instance
+    credentials.grantRead(fargate.service.taskDefinition.taskRole)
     dbServer.connections.allowFrom(fargate.service, ec2.Port.tcp(5432))
-    // allow initializer function to read RDS instance creds secret
-//         creds.grantRead(initializer.function)
+    fargate.cluster.node.addDependency(dbServer)    // cluster shall wait until rds instance up
   }
 }
