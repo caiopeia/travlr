@@ -1,0 +1,10 @@
+services:
+  database:
+    image: 'postgres:18.1-alpine'
+    container_name: travlr_postgres
+    environment:
+      POSTGRES_DB: 'travlr'
+      POSTGRES_USER: 'travlr'
+      POSTGRES_PASSWORD: 'travlr'
+    ports:
+      - 5432:5432

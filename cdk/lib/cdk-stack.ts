@@ -2,14 +2,15 @@ import { Construct } from 'constructs';
 import {
   aws_ec2 as ec2,
   aws_ecs as ecs,
+  aws_rds as rds,
   aws_ecs_patterns as ecs_patterns,
   aws_ecr_assets as ecr_assets,
+  aws_elasticloadbalancingv2 as elb_v2,
   Duration,
   Stack,
   StackProps,
 } from 'aws-cdk-lib';
 import * as path from "path";
-import {Protocol} from "aws-cdk-lib/aws-elasticloadbalancingv2";
 
 export class CdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -19,9 +20,59 @@ export class CdkStack extends Stack {
 
     const vpc = new ec2.Vpc(this, 'TravlrVpc', {
       maxAzs: 3,
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'ingress',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          cidrMask: 24,
+          name: 'service',
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        },
+        {
+          cidrMask: 28,
+          name: 'rds',
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+        },
+      ],
     });
+
+    const instanceIdentifier = 'postgres-18-1'
+    const credentialsSecretName = `/RdsInitExample/rds/creds/${instanceIdentifier}`.toLowerCase()
+    const credentials = new rds.DatabaseSecret(this, 'MysqlRdsCredentials', {
+      secretName: credentialsSecretName,
+      username: 'travlr',
+    })
+    const dbServer = new rds.DatabaseInstance(this, 'MysqlRdsInstance', {
+      vpcSubnets: {
+        onePerAz: true,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+      },
+      credentials: rds.Credentials.fromSecret(credentials),
+      vpc: vpc,
+      port: 5432,
+      databaseName: 'travlr',
+      allocatedStorage: 20,
+      instanceIdentifier,
+      engine: rds.DatabaseInstanceEngine.postgres({
+        version: rds.PostgresEngineVersion.VER_18_1,
+      }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
+      parameters: {
+        "rds.force_ssl": "0", // allow client access without ssh
+      },
+    });
+    const bastionHost = new ec2.BastionHostLinux(this, 'BastionHost', {
+      vpc,
+      instanceName: 'travlr-bastion',
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
+    });
+    dbServer.connections.allowFrom(bastionHost, ec2.Port.tcp(5432));
+
     const cluster = new ecs.Cluster(this, 'TravlrCluster', {
-      vpc: vpc
+      vpc,
     });
     const assetImageProps: ecs.AssetImageProps = {
       cacheDisabled: false,  // debug
@@ -40,6 +91,13 @@ export class CdkStack extends Stack {
         image: image,
         environment: {
           "name": "Travlr is now with Spring Boot on Fargate",
+        },
+        secrets: {
+          "DB_HOST": ecs.Secret.fromSecretsManager(credentials, 'host'),
+          "DB_PORT": ecs.Secret.fromSecretsManager(credentials, 'port'),
+          "DB_NAME": ecs.Secret.fromSecretsManager(credentials, 'dbname'),
+          "DB_USER": ecs.Secret.fromSecretsManager(credentials, 'username'),
+          "DB_PASSWORD": ecs.Secret.fromSecretsManager(credentials, 'password'),
         },
         containerPort: 80,
       },
@@ -60,7 +118,10 @@ export class CdkStack extends Stack {
       port: "80",
       healthyHttpCodes: "200",
       interval: Duration.seconds(30),
-      protocol: Protocol.HTTP,
+      protocol: elb_v2.Protocol.HTTP,
     })
+    credentials.grantRead(fargate.service.taskDefinition.taskRole)
+    dbServer.connections.allowFrom(fargate.service, ec2.Port.tcp(5432))
+    fargate.cluster.node.addDependency(dbServer)    // cluster shall wait until rds instance up
   }
 }
