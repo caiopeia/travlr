@@ -5,13 +5,12 @@ import {
   aws_rds as rds,
   aws_ecs_patterns as ecs_patterns,
   aws_ecr_assets as ecr_assets,
+  aws_elasticloadbalancingv2 as elb_v2,
   Duration,
   Stack,
   StackProps,
 } from 'aws-cdk-lib';
 import * as path from "path";
-import {Protocol} from "aws-cdk-lib/aws-elasticloadbalancingv2";
-import { PostgresEngineVersion } from 'aws-cdk-lib/aws-rds';
 
 export class CdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -58,7 +57,7 @@ export class CdkStack extends Stack {
       allocatedStorage: 20,
       instanceIdentifier,
       engine: rds.DatabaseInstanceEngine.postgres({
-        version: PostgresEngineVersion.VER_18_1,
+        version: rds.PostgresEngineVersion.VER_18_1,
       }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
       parameters: {
@@ -119,7 +118,7 @@ export class CdkStack extends Stack {
       port: "80",
       healthyHttpCodes: "200",
       interval: Duration.seconds(30),
-      protocol: Protocol.HTTP,
+      protocol: elb_v2.Protocol.HTTP,
     })
     credentials.grantRead(fargate.service.taskDefinition.taskRole)
     dbServer.connections.allowFrom(fargate.service, ec2.Port.tcp(5432))
