@@ -1,8 +1,8 @@
 # Travlr
 * is an app to support travellers
   * friends
-  * locations
   * photos
+  * locations
 * see [usecase Solo Traveller (MVP)](doc/usecases.md#solo-traveller-mvp)
 * see [use cases diagram](doc/use_cases.drawio.png)
 
