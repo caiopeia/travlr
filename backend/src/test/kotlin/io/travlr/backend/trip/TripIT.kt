@@ -14,24 +14,29 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
 
+@Testcontainers
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @Profile("local")
-@Testcontainers
-@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TripIT(
     @Autowired val webTestClient: WebTestClient,
     @Autowired val tripRepository: TripRepository,
 ) {
     @BeforeEach
     fun beforeEach() {
-        tripRepository.deleteAll()
+        tripRepository.deleteAll().block()
     }
 
     @Test
-    @Order(1)
     fun `get all`() {
+        val cut: Trip = tripRepository.save(
+            Trip(
+                name = "Central America",
+                description = "My trip to Central America",
+            )
+        ).block()!!
+
         val result: FluxExchangeResult<Trip> = webTestClient.get()
             .uri("/api/trips")
             .exchange()
@@ -41,98 +46,102 @@ class TripIT(
         // A (assertj)
         val trips: List<Trip> = result.responseBody.toStream().toList()
         assertThat(trips).hasSize(1)
-        assertThat(trips[0].id).isEqualTo(1)
-        assertThat(trips[0].name).isEqualTo("Central America")
-        assertThat(trips[0].description).isEqualTo("My trip to Central America")
+        assertThat(trips[0]).isEqualTo(cut)
 
         // B (io.reactor) - can only have one
 //        StepVerifier.create(result.responseBody)
-//            .expectNextMatches({ t -> t.name.equals("Central America")
-//                    && t.description.equals("My trip to Central America") })
+//            .expectNextMatches({ t -> t.name.equals(cut.name)
+//                    && t.description.equals(cut.description) })
 //            .expectNextCount(0)
 //            .thenCancel()
 //            .verify()
     }
 
     @Test
-    @Order(2)
     fun `get`() {
-        val result: FluxExchangeResult<Trip> = webTestClient.get()
-            .uri("/api/trips/{id}", 1)
+        val cut: Trip = tripRepository.save(
+            Trip(
+                name = "Central America",
+                description = "My trip to Central America",
+            )
+        ).block()!!
+
+        val trip: Trip = webTestClient.get()
+            .uri("/api/trips/{id}", cut.id)
             .exchange()
             .expectStatus().isOk()
             .returnResult(Trip::class.java)
+            .responseBody.single().block()!!
 
-        val trip: Trip = result.responseBody
-            .single()   // extract only first element and throw error if zero or more than one
-            .block()!!  // end non blocking request and get result (throws exception on logs)
-        assertThat(trip.id).isEqualTo(1)
-        assertThat(trip.name).isEqualTo("Central America")
-        assertThat(trip.description).isEqualTo("My trip to Central America")
+        assertThat(trip).isEqualTo(cut)
     }
 
     @Test
-    @Order(3)
     fun `post`() {
-        val result: FluxExchangeResult<Trip> = webTestClient.post()
+        val new = Trip(
+            name = "South America",
+            description = "My trip to South America",
+        )
+
+        val result: Trip = webTestClient.post()
             .uri("/api/trips")
-            .bodyValue(
-                Trip(
-                    name = "South America",
-                    description = "My trip to South America",
-                )
-            )
+            .bodyValue(new)
             .exchange()
             .expectStatus().isOk
             .returnResult(Trip::class.java)
+            .responseBody.single().block()!!
 
-        val trip: Trip = result.responseBody
-            .single()   // extract only first element and throw error if zero or more than one
-            .block()!!  // end non blocking request and get result (throws exception on logs)
-        assertThat(trip.id).isEqualTo(2)
-        assertThat(trip.name).isEqualTo("South America")
-        assertThat(trip.description).isEqualTo("My trip to South America")
+        assertThat(result.id).isNotNull
+        assertThat(result.name).isEqualTo(new.name)
+        assertThat(result.description).isEqualTo(new.description)
+        val saved: Trip = tripRepository.findById(result.id!!).block()!!
+        assertThat(saved).isEqualTo(result)
     }
 
     @Test
-    @Order(4)
     fun `put`() {
-        val result: FluxExchangeResult<Trip> = webTestClient.put()
-            .uri("/api/trips/{id}", 1)
-            .bodyValue(
-                Trip(
-                    name = "West America",
-                    description = "My trip to West America",
-                )
+        val existing: Trip = tripRepository.save(
+            Trip(
+                name = "Central America",
+                description = "My trip to Central America",
             )
+        ).block()!!
+        val update = Trip(
+            name = "West America",
+            description = "My trip to West America",
+        )
+
+        val result: Trip = webTestClient.put()
+            .uri("/api/trips/{id}", existing.id)
+            .bodyValue(update)
             .exchange()
             .expectStatus().isOk
             .returnResult(Trip::class.java)
+            .responseBody.single().block()!!
 
-        val trip: Trip = result.responseBody
-            .single()   // extract only first element and throw error if zero or more than one
-            .block()!!  // end non blocking request and get result (throws exception on logs)
-        assertThat(trip.id).isEqualTo(1)
-        assertThat(trip.name).isEqualTo("West America")
-        assertThat(trip.description).isEqualTo("My trip to West America")
+        assertThat(result.id).isEqualTo(existing.id)
+        assertThat(result.name).isEqualTo(update.name)
+        assertThat(result.description).isEqualTo(update.description)
     }
 
     @Test
-    @Order(5)
     fun `delete`() {
-        assertThat(
-            tripRepository.findById(1).single().blockOptional()
-        ).isNotEmpty
+        val cut: Trip = tripRepository.save(
+            Trip(
+                name = "Central America",
+                description = "My trip to Central America",
+            )
+        ).block()!!
 
         val result = webTestClient.delete()
-            .uri("/api/trips/{id}", 1)
+            .uri("/api/trips/{id}", cut.id)
             .exchange()
             .expectStatus().isOk
             .returnResult(Void::class.java)
             .responseBody
 
         assertThrows<NoSuchElementException>{
-            result.then(tripRepository.findById(1))
+            result.then(tripRepository.findById(cut.id!!))
                 .single()
                 .block()
         }
