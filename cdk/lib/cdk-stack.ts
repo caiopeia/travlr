@@ -65,9 +65,15 @@ export class CdkStack extends Stack {
         "rds.force_ssl": "0", // allow client access without ssh
       },
     });
+    const bastionHost = new ec2.BastionHostLinux(this, 'BastionHost', {
+      vpc,
+      instanceName: 'travlr-bastion',
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
+    });
+    dbServer.connections.allowFrom(bastionHost, ec2.Port.tcp(5432));
 
     const cluster = new ecs.Cluster(this, 'TravlrCluster', {
-      vpc: vpc
+      vpc,
     });
     const assetImageProps: ecs.AssetImageProps = {
       cacheDisabled: false,  // debug
