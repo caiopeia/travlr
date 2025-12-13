@@ -1,6 +1,6 @@
 # Backend
+
 ## Build and Run As Docker Container
-* set JAVA_HOME env var to java 21 sdk
 ```shell
 ./gradlew :backend:clean :backend:build
 TAG="io.travlr.backend:latest"
@@ -14,7 +14,7 @@ curl -f http://localhost/actuator/health
 wget --no-verbose --tries=1 --spider http://localhost/actuator/health
 ```
 
-# DEBUG 
+## Debug
 * execute shell inside running container from another terminal
 ```shell
 docker exec -it 19c93d87d157 /bin/sh
