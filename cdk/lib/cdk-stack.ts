@@ -39,13 +39,14 @@ export class CdkStack extends Stack {
       ],
     });
 
-    const instanceIdentifier = 'postgres-18-1'
-    const credentialsSecretName = `/RdsInitExample/rds/creds/${instanceIdentifier}`.toLowerCase()
-    const credentials = new rds.DatabaseSecret(this, 'MysqlRdsCredentials', {
+    const instanceIdentifier = 'travlr-rds-instance'
+    const credentialsSecretName = `/travlr/${instanceIdentifier}`.toLowerCase()
+    const credentials = new rds.DatabaseSecret(this, 'TravlrRdsCredentials', {
       secretName: credentialsSecretName,
       username: 'travlr',
     })
-    const dbServer = new rds.DatabaseInstance(this, 'MysqlRdsInstance', {
+    
+    const database = new rds.DatabaseInstance(this, 'TravlrRdsInstance', {
       vpcSubnets: {
         onePerAz: true,
         subnetType: ec2.SubnetType.PRIVATE_ISOLATED
@@ -64,25 +65,24 @@ export class CdkStack extends Stack {
         "rds.force_ssl": "0", // allow client access without ssh
       },
     });
-    const bastionHost = new ec2.BastionHostLinux(this, 'BastionHost', {
+    
+    const bastionHost = new ec2.BastionHostLinux(this, 'TravlrBastionHost', {
       vpc,
       instanceName: 'travlr-bastion',
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
     });
-    dbServer.connections.allowFrom(bastionHost, ec2.Port.tcp(5432));
 
-    const cluster = new ecs.Cluster(this, 'TravlrCluster', {
+    const cluster = new ecs.Cluster(this, 'TravlrEcsCluster', {
       vpc,
     });
-    const assetImageProps: ecs.AssetImageProps = {
-      cacheDisabled: false,  // debug
+
+    const relativePathToDockerfile = path.join(__dirname, '..', '..', 'backend');
+    const image = ecs.ContainerImage.fromAsset(relativePathToDockerfile, {
+      cacheDisabled: false,  // turn on for debugging purposes
       platform: ecr_assets.Platform.LINUX_AMD64,  // force x86 system architecture as it used per default in AWS
-    };
-    const image = ecs.ContainerImage.fromAsset(
-      path.join(__dirname, '..', '..', 'backend'),
-      assetImageProps,
-    )
-    const fargate = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'TravlrFargateService', {
+    });
+
+    const service = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'TravlrFargateEcsService', {
       cluster: cluster,
       cpu: 512,
       memoryLimitMiB: 2048,
@@ -113,15 +113,17 @@ export class CdkStack extends Stack {
         retries: 2,
       },
     });
-    fargate.targetGroup.configureHealthCheck({
+    service.targetGroup.configureHealthCheck({
       path: "/actuator/health",
       port: "80",
       healthyHttpCodes: "200",
       interval: Duration.seconds(30),
       protocol: elb_v2.Protocol.HTTP,
-    })
-    credentials.grantRead(fargate.service.taskDefinition.taskRole)
-    dbServer.connections.allowFrom(fargate.service, ec2.Port.tcp(5432))
-    fargate.cluster.node.addDependency(dbServer)    // cluster shall wait until rds instance up
+    });
+    
+    credentials.grantRead(service.service.taskDefinition.taskRole);
+    database.connections.allowFrom(service.service, ec2.Port.tcp(5432));
+    database.connections.allowFrom(bastionHost, ec2.Port.tcp(5432));
+    service.cluster.node.addDependency(database);    // cluster shall wait until rds instance up
   }
 }
