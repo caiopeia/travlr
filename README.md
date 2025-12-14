@@ -8,8 +8,6 @@
 
 ## Infrastructure
 * see [documentation](cdk/README.md)
-* see [diagram](cdk/diagram.drawio.png)
 
 ## Service
 * see [documentation](backend/README.md)
-* see [entity diagram](backend/entities.drawio.png)
