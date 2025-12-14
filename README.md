@@ -3,17 +3,13 @@
   * friends
   * photos
   * locations
-
-## Usecases
 * see [usecase Solo Traveller (MVP)](doc/usecases.md#solo-traveller-mvp)
 * see [use cases diagram](doc/use_cases.drawio.png)
 
-## Architecture
-* see [diagram](doc/architecture-diagram.drawio.png)
-* see [entity diagram](doc/entities.drawio.png)
-
 ## Infrastructure
 * see [documentation](cdk/README.md)
+* see [diagram](cdk/diagram.drawio.png)
 
 ## Service
 * see [documentation](backend/README.md)
+* see [entity diagram](backend/entities.drawio.png)

@@ -1,4 +1,6 @@
-# Travlr CDK TypeScript project
+# Infrastructure
+
+![diagram](diagram.drawio.png "Diagram")
 
 ## Deploy
 ```shell

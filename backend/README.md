@@ -1,4 +1,6 @@
-# Backend
+# Service
+
+![entities](entities.drawio.png "Entity Relationship Diagram")
 
 ## Build and Run As Docker Container
 ```shell
