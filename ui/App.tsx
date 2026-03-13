@@ -5,38 +5,81 @@
  * @format
  */
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View, Text } from 'react-native';
+import axios from 'axios';
+import { useEffect } from 'react';
+import { StyleSheet, View, Text, FlatList } from 'react-native';
 import {
   SafeAreaProvider,
-  useSafeAreaInsets,
+  SafeAreaView,
 } from 'react-native-safe-area-context';
+import { create } from 'zustand';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const BASE_URL = 'http://localhost/api';
+interface State {
+  trips: Trip[];
+  getTrips: () => void;
+}
+interface Trip {
+  id: number;
+  name: string;
+  description: string;
+}
+const useBasicStore = create<State>((set, get) => ({
+  trips: [],
+  getTrips: async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/trips`);
+      const data = response.data;
+      set({ trips: data });
+    } catch (error) {
+      console.error('Failed to fetch trips:', error);
+    }
+  },
+}));
+
+export default function App() {
+  const { getTrips } = useBasicStore(); 
+  useEffect(() => {
+    getTrips();
+  }, []);
+  const { trips } = useBasicStore.getState();
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          data={trips}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.item}>
+              <Text>{item.id} / {item.name} / {item.description}</Text>
+            </View>
+          )}
+        />
+      </SafeAreaView>
     </SafeAreaProvider>
-  );
-}
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <Text>Test</Text>
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
+    backgroundColor: 'white',
+  },
+  header: {
+    fontSize: 24,
+    marginBottom: 16,
+  },
+  subheader: {
+    fontSize: 18,
+    marginVertical: 16,
+  },
+  item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
 });
-
-export default App;
