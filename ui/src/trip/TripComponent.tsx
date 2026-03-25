@@ -8,7 +8,7 @@ export default function Trip() {
   useEffect(() => {
     getTrips();
   }, []);
-  const { trips, isDeleting, current } = store.getState();
+  const { trips, current } = store.getState();
 
   const toggleExpand = (tripId: number) => {
     toggleExpanded(tripId);
@@ -51,7 +51,7 @@ export default function Trip() {
               <Pressable onPress={() => toggleExpand(item.id)} style={styles.itemHeader}>
                 <Text style={styles.expandHint}>{expanded ? '▲' : '▼'}</Text>
                 <Text style={styles.itemTitle}>{item.id} / {item.name}</Text>
-                <Pressable onPress={() => handleDeletePress(item.id)} disabled={isDeleting} style={styles.deleteButtonWrapper}>
+                <Pressable onPress={() => handleDeletePress(item.id)} style={styles.deleteButtonWrapper}>
                   <Text style={styles.deleteButton}>Delete</Text>
                 </Pressable>
               </Pressable>
