@@ -10,10 +10,6 @@ export default function Trips() {
   }, []);
   const { trips, current } = store.getState();
 
-  const toggleCurrent = (tripId: number) => {
-    toggleCurrent(tripId);
-  };
-
   const handleDeletePress = (tripId: number) => {
     Alert.alert(
       'Delete Trip',
@@ -31,7 +27,7 @@ export default function Trips() {
 
   const handleCreate = async () => {
     const existing = store.getState().trips;
-    const nextId = existing.length > 0 ? Math.max(...existing.map((t) => t.id!)) + 1 : 1;
+    const nextId = existing.length > 0 ? Math.max(...existing.map((t) => t.id!!)) + 1 : 1;
     const newTrip = {
       id: null,
       name: `New Trip ${nextId}`,
@@ -49,7 +45,7 @@ export default function Trips() {
           const expanded = current === item.id;
           return (
             <View style={styles.itemContainer}>
-              <Pressable onPress={() => toggleCurrent(item.id!)} style={styles.itemHeader}>
+              <Pressable onPress={() => toggleCurrent(item.id!!)} style={styles.itemHeader}>
                 <Text style={styles.expandHint}>{expanded ? '▲' : '▼'}</Text>
                 <Text style={styles.itemTitle}>{item.id} / {item.name}</Text>
                 <Pressable onPress={() => handleDeletePress(item.id!)} style={styles.deleteButtonWrapper}>
