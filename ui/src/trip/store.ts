@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 export type State = {
   trips: Trip[],
+  isDeleting: boolean,
 }
 
 export type Trip = {
@@ -12,8 +13,13 @@ export type Trip = {
 
 export const store = create<State>(() => ({
   trips: [],
+  isDeleting: false,
 }));
 
 export const setTrips = (trips: Trip[]) => store.setState({ 
   trips: trips,
+});
+
+export const setIsDeleting = (isDeleting: boolean) => store.setState({
+  isDeleting,
 });

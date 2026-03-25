@@ -12,3 +12,12 @@ export const getTrips = async () => {
     console.error('Failed to fetch trips:', error);
   }
 };
+
+export const deleteTrip = async (tripId: number) => {
+  try {
+    await axios.delete(`${BASE_URL}/trips/${tripId}`);
+    await getTrips();
+  } catch (error) {
+    console.error('Failed to delete trip:', error);
+  }
+};
