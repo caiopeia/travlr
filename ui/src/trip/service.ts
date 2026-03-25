@@ -21,3 +21,14 @@ export const deleteTrip = async (tripId: number) => {
     console.error('Failed to delete trip:', error);
   }
 };
+
+export type NewTrip = Omit<Trip, 'id'>;
+
+export const createTrip = async (trip: NewTrip) => {
+  try {
+    await axios.post(`${BASE_URL}/trips`, trip);
+    await getTrips();
+  } catch (error) {
+    console.error('Failed to create trip:', error);
+  }
+};

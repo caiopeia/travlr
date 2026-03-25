@@ -23,3 +23,7 @@ export const setTrips = (trips: Trip[]) => store.setState({
 export const setIsDeleting = (isDeleting: boolean) => store.setState({
   isDeleting,
 });
+
+export const addTrip = (trip: Trip) => store.setState((state) => ({
+  trips: [...state.trips, trip],
+}));
