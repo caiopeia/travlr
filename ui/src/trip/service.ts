@@ -1,3 +1,8 @@
+/**
+ * - backend access
+ * - business logic
+ */
+
 import axios from 'axios';
 import { Trip, setTrips, store } from './store.ts';
 

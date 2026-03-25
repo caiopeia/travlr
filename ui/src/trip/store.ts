@@ -1,3 +1,8 @@
+/**
+ * - client side DTO model
+ * - only simple getters and setters, adds and removes
+ * - no (complex) business logic
+ */
 import { create } from 'zustand';
 
 export type State = {
