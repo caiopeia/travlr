@@ -1,24 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, Pressable, Alert } from 'react-native';
 import { store } from './store.ts';
-import { getTrips, deleteTrip, createTrip } from './service.ts';
+import { getTrips, deleteTrip, createTrip, toggleExpanded } from './service.ts';
 
 export default function Trip() {
   store();
-  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
-
   useEffect(() => {
     getTrips();
   }, []);
-  const { trips, isDeleting } = store.getState();
+  const { trips, isDeleting, expandedIds } = store.getState();
 
   const toggleExpand = (tripId: number) => {
-    setExpandedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(tripId)) next.delete(tripId);
-      else next.add(tripId);
-      return next;
-    });
+    toggleExpanded(tripId);
   };
 
   const handleDeletePress = (tripId: number) => {

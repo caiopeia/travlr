@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Trip, setTrips } from './store.ts';
+import { Trip, setTrips, store } from './store.ts';
 
 const BASE_URL = 'http://localhost/api';
 
@@ -32,3 +32,10 @@ export const createTrip = async (trip: NewTrip) => {
     console.error('Failed to create trip:', error);
   }
 };
+
+export const toggleExpanded = (tripId: number) => store.setState((state) => {
+  const next = new Set(state.expandedIds);
+  if (next.has(tripId)) next.delete(tripId);
+  else next.add(tripId);
+  return { expandedIds: next };
+});
