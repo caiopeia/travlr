@@ -8,7 +8,7 @@ export default function Trip() {
   useEffect(() => {
     getTrips();
   }, []);
-  const { trips, isDeleting, expandedIds } = store.getState();
+  const { trips, isDeleting, current } = store.getState();
 
   const toggleExpand = (tripId: number) => {
     toggleExpanded(tripId);
@@ -45,7 +45,7 @@ export default function Trip() {
       <FlatList data={trips}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => {
-          const expanded = expandedIds.has(item.id);
+          const expanded = current === item.id;
           return (
             <View style={styles.itemContainer}>
               <Pressable onPress={() => toggleExpand(item.id)} style={styles.itemHeader}>

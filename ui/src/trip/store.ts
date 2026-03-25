@@ -3,7 +3,7 @@ import { create } from 'zustand';
 export type State = {
   trips: Trip[],
   isDeleting: boolean,
-  expandedIds: Set<number>,
+  current: number | null,
 }
 
 export type Trip = {
@@ -15,7 +15,7 @@ export type Trip = {
 export const store = create<State>(() => ({
   trips: [],
   isDeleting: false,
-  expandedIds: new Set(),
+  current: null,
 }));
 
 export const setTrips = (trips: Trip[]) => store.setState({ 

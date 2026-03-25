@@ -33,9 +33,6 @@ export const createTrip = async (trip: NewTrip) => {
   }
 };
 
-export const toggleExpanded = (tripId: number) => store.setState((state) => {
-  const next = new Set(state.expandedIds);
-  if (next.has(tripId)) next.delete(tripId);
-  else next.add(tripId);
-  return { expandedIds: next };
-});
+export const toggleExpanded = (id: number) => store.setState((state) => ({
+  current: state.current === id ? null : id,
+}));
