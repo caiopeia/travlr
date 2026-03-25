@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, Pressable, Alert } from 'react-native';
-import { store } from './store.ts';
-import { getTrips, deleteTrip, createTrip, toggleExpanded } from './service.ts';
+import { store } from './TripStore.ts';
+import { getTrips, deleteTrip, createTrip, toggleExpanded } from './TripService.ts';
 
 export default function Trip() {
   store();

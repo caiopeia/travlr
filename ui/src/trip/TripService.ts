@@ -4,7 +4,7 @@
  */
 
 import axios from 'axios';
-import { Trip, setTrips, store } from './store.ts';
+import { Trip, setTrips, store } from './TripStore.ts';
 
 const BASE_URL = 'http://localhost/api';
 
