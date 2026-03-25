@@ -1,14 +1,25 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, FlatList, Pressable, Alert } from 'react-native';
 import { store } from './store.ts';
 import { getTrips, deleteTrip, createTrip } from './service.ts';
 
 export default function Trip() {
   store();
+  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
+
   useEffect(() => {
     getTrips();
   }, []);
   const { trips, isDeleting } = store.getState();
+
+  const toggleExpand = (tripId: number) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(tripId)) next.delete(tripId);
+      else next.add(tripId);
+      return next;
+    });
+  };
 
   const handleDeletePress = (tripId: number) => {
     Alert.alert(
@@ -40,14 +51,25 @@ export default function Trip() {
     <View style={styles.wrapper}>
       <FlatList data={trips}
         keyExtractor={(_, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.item}>
-            <Text>{item.id} / {item.name} / {item.description}</Text>
-            <Pressable onPress={() => handleDeletePress(item.id)} disabled={isDeleting}>
-              <Text style={styles.deleteButton}>Delete</Text>
-            </Pressable>
-          </View>
-        )}
+        renderItem={({ item }) => {
+          const expanded = expandedIds.has(item.id);
+          return (
+            <View style={styles.itemContainer}>
+              <Pressable onPress={() => toggleExpand(item.id)} style={styles.itemHeader}>
+                <Text style={styles.expandHint}>{expanded ? '▲' : '▼'}</Text>
+                <Text style={styles.itemTitle}>{item.id} / {item.name}</Text>
+                <Pressable onPress={() => handleDeletePress(item.id)} disabled={isDeleting} style={styles.deleteButtonWrapper}>
+                  <Text style={styles.deleteButton}>Delete</Text>
+                </Pressable>
+              </Pressable>
+              {expanded && (
+                <View style={styles.itemBody}>
+                  <Text>{item.description}</Text>
+                </View>
+              )}
+            </View>
+          );
+        }}
       />
       <Pressable style={styles.addButton} onPress={handleAddTrip}>
         <Text style={styles.addButtonText}>Add Trip</Text>
@@ -71,6 +93,32 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+  },
+  itemContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  itemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  itemTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  expandHint: {
+    fontSize: 14,
+    color: '#666',
+  },
+  itemBody: {
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  deleteButtonWrapper: {
+    alignSelf: 'flex-end',
   },
   deleteButton: {
     color: '#0a88cdeb',
