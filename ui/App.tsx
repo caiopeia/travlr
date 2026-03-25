@@ -3,13 +3,13 @@ import {
   SafeAreaProvider,
   SafeAreaView,
 } from 'react-native-safe-area-context';
-import Trip from './src/trip/TripComponent';
+import Trips from './src/trip/TripComponent';
 
 export default function App() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <Trip />
+        <Trips />
       </SafeAreaView>
     </SafeAreaProvider>
   );

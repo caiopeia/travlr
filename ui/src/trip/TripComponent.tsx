@@ -1,17 +1,17 @@
 import { useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, Pressable, Alert } from 'react-native';
 import { store } from './TripStore.ts';
-import { getTrips, deleteTrip, createTrip, toggleExpanded } from './TripService.ts';
+import { getAll, deleteTrip, create, toggleCurrent } from './TripService.ts';
 
-export default function Trip() {
+export default function Trips() {
   store();
   useEffect(() => {
-    getTrips();
+    getAll();
   }, []);
   const { trips, current } = store.getState();
 
-  const toggleExpand = (tripId: number) => {
-    toggleExpanded(tripId);
+  const toggleCurrent = (tripId: number) => {
+    toggleCurrent(tripId);
   };
 
   const handleDeletePress = (tripId: number) => {
@@ -22,22 +22,23 @@ export default function Trip() {
         { text: 'Cancel', onPress: () => {}, style: 'cancel' },
         {
           text: 'Delete',
-          onPress: () => deleteTrip(tripId),
+          onPress: async () => await deleteTrip(tripId),
           style: 'destructive',
         },
       ],
     );
   };
 
-  const handleAddTrip = async () => {
-    const existingTrips = store.getState().trips;
-    const nextId = existingTrips.length > 0 ? Math.max(...existingTrips.map((t) => t.id)) + 1 : 1;
+  const handleCreate = async () => {
+    const existing = store.getState().trips;
+    const nextId = existing.length > 0 ? Math.max(...existing.map((t) => t.id!)) + 1 : 1;
     const newTrip = {
+      id: null,
       name: `New Trip ${nextId}`,
       description: 'Created from UI button',
     };
 
-    await createTrip(newTrip);
+    await create(newTrip);
   };
 
   return (
@@ -48,10 +49,10 @@ export default function Trip() {
           const expanded = current === item.id;
           return (
             <View style={styles.itemContainer}>
-              <Pressable onPress={() => toggleExpand(item.id)} style={styles.itemHeader}>
+              <Pressable onPress={() => toggleCurrent(item.id!)} style={styles.itemHeader}>
                 <Text style={styles.expandHint}>{expanded ? '▲' : '▼'}</Text>
                 <Text style={styles.itemTitle}>{item.id} / {item.name}</Text>
-                <Pressable onPress={() => handleDeletePress(item.id)} style={styles.deleteButtonWrapper}>
+                <Pressable onPress={() => handleDeletePress(item.id!)} style={styles.deleteButtonWrapper}>
                   <Text style={styles.deleteButton}>Delete</Text>
                 </Pressable>
               </Pressable>
@@ -64,8 +65,8 @@ export default function Trip() {
           );
         }}
       />
-      <Pressable style={styles.addButton} onPress={handleAddTrip}>
-        <Text style={styles.addButtonText}>Add Trip</Text>
+      <Pressable style={styles.createButton} onPress={handleCreate}>
+        <Text style={styles.createButtonText}>Create Trip</Text>
       </Pressable>
     </View>
   );
@@ -120,13 +121,13 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
   },
-  addButton: {
+  createButton: {
     padding: 14,
     backgroundColor: '#333',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  addButtonText: {
+  createButtonText: {
     color: '#fff',
     fontWeight: '600',
   },

@@ -4,11 +4,11 @@
  */
 
 import axios from 'axios';
-import { Trip, setTrips, store } from './TripStore.ts';
+import { Trip, setTrips, setCurrent } from './TripStore.ts';
 
 const BASE_URL = 'http://localhost/api';
 
-export const getTrips = async () => {
+export const getAll = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/trips`);
     const trips: Trip[] = response.data;
@@ -21,23 +21,21 @@ export const getTrips = async () => {
 export const deleteTrip = async (tripId: number) => {
   try {
     await axios.delete(`${BASE_URL}/trips/${tripId}`);
-    await getTrips();
+    await getAll();
   } catch (error) {
     console.error('Failed to delete trip:', error);
   }
 };
 
-export type NewTrip = Omit<Trip, 'id'>;
-
-export const createTrip = async (trip: NewTrip) => {
+export const create = async (trip: Trip) => {
   try {
     await axios.post(`${BASE_URL}/trips`, trip);
-    await getTrips();
+    await getAll();
   } catch (error) {
     console.error('Failed to create trip:', error);
   }
 };
 
-export const toggleExpanded = (id: number) => store.setState((state) => ({
-  current: state.current === id ? null : id,
-}));
+export const toggleCurrent = (id: number) => {
+  setCurrent(state => state.current === id ? null : id);
+};
