@@ -14,8 +14,18 @@ function HomeScreen() {
 }
 
 const RootStack = createNativeStackNavigator({
+  initialRouteName: 'Home',
+  screenOptions: {
+    headerStyle: { backgroundColor: 'black' },
+    headerTintColor: 'white',
+  },
   screens: {
-    Home: HomeScreen,
+    Home: {
+      screen: HomeScreen,
+      options: {
+        title: 'Trips',
+      },
+    },
   },
 });
 
@@ -34,7 +44,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: 'white',
+    padding: 8,
+    backgroundColor: 'lightgrey',
   },
 });
