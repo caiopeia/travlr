@@ -3,29 +3,36 @@ import {
   SafeAreaProvider,
   SafeAreaView,
 } from 'react-native-safe-area-context';
-import Trips from './src/trip/TripComponent';
+import Trips from './src/trips/TripsComponent';
+import Trip from './src/trips/TripComponent';
 import { createStaticNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-function HomeScreen() {
+function TripsScreen() {
   return (
     <Trips />
   );
 }
 
 const RootStack = createNativeStackNavigator({
-  initialRouteName: 'Home',
+  initialRouteName: 'Trips',
   screenOptions: {
     headerStyle: { backgroundColor: 'black' },
     headerTintColor: 'white',
   },
   screens: {
-    Home: {
-      screen: HomeScreen,
+    Trips: {
+      screen: TripsScreen,
       options: {
         title: 'Trips',
       },
     },
+    Trip: {
+      screen: Trip,
+      options: {
+        title: 'Trip',
+      },
+    }
   },
 });
 

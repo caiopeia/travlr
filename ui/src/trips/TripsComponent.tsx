@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, Pressable, Alert } from 'react-native';
-import { store } from './TripStore.ts';
-import { getAll, deleteTrip, create, toggleCurrent } from './TripService.ts';
+import { store } from './TripsStore.ts';
+import { getAll, deleteTrip, create, toggleCurrent } from './TripsService.ts';
+import { Link } from '@react-navigation/native';
+import { Button } from '@react-navigation/elements';
 
 export default function Trips() {
   store();
@@ -55,6 +57,9 @@ export default function Trips() {
               {expanded && (
                 <View style={styles.itemBody}>
                   <Text>{item.description}</Text>
+                  <Button screen="Trip" params={{ id: item.id }}>
+                    Edit
+                  </Button>
                 </View>
               )}
             </View>
