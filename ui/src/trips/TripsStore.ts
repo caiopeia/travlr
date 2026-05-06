@@ -4,16 +4,11 @@
  * - no (complex) business logic
  */
 import { create } from 'zustand';
+import { Trip } from './TripStore';
 
 export type State = {
   trips: Trip[],
   current: number | null,
-}
-
-export type Trip = {
-  id: number | null,
-  name: string,
-  description: string,
 }
 
 export const store = create<State>(() => ({

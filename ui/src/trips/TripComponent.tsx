@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 import { store } from './TripStore.ts';
 import { get } from './TripService.ts';
 
@@ -9,7 +9,7 @@ export default function Trip({ route }: { route: any }): React.JSX.Element {
   useEffect(() => {
     get(id);
   }, []);
-  const { trip } = store.getState();
+  const { trip, setDescription } = store.getState();
 
   return (
     <View>
@@ -17,7 +17,16 @@ export default function Trip({ route }: { route: any }): React.JSX.Element {
         <View>
           <Text>{trip.id}</Text>
           <Text>{trip.name}</Text>
-          <Text>{trip.description}</Text>
+          <TextInput
+            value={trip.description}
+            onChangeText={(value) => setDescription(value)}
+            placeholder="Enter trip description"
+            editable={true}
+            style={{
+              borderWidth: 1,
+              borderColor: '#aaa',
+            }}
+          />
         </View>
       ) || (
         <View>
