@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { store } from './TripStore.ts';
-import { get } from './TripService.ts';
+import { get, save } from './TripService.ts';
 
 export default function Trip({ route }: { route: any }): React.JSX.Element {
   const { id } = route.params;
@@ -10,12 +10,7 @@ export default function Trip({ route }: { route: any }): React.JSX.Element {
     get(id);
   }, []);
   const { trip, setDescription } = store.getState();
-
-  const handleSave = () => {
-    // FIXME Save trip logic here
-    console.log('Saving trip:', trip);
-  };
-
+  
   return (
     <View>
       {trip && (
@@ -33,7 +28,7 @@ export default function Trip({ route }: { route: any }): React.JSX.Element {
             }}
           />
           <Pressable
-            onPress={handleSave}
+            onPress={() => save(trip)}
             style={{
               backgroundColor: '#000000',
               paddingVertical: 10,
