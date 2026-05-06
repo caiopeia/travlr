@@ -1,12 +1,12 @@
 /**
  * - client side DTO model
  * - only simple getters and setters, adds and removes
- * - no (complex) business logic
+ * - no (complex) business logic or side effects
  */
 import { create } from 'zustand';
 
 export type Trip = {
-  id: number | null;  // FIXME if we can make this non-nullable, we can remove a lot of null checks in the code
+  id: number | null;
   name: string;
   description: string;
 };

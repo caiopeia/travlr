@@ -1,7 +1,7 @@
 /**
  * - client side DTO model
  * - only simple getters and setters, adds and removes
- * - no (complex) business logic
+ * - no (complex) business logic or side effects
  */
 import { create } from 'zustand';
 import { Trip } from './TripStore';
