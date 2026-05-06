@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { store } from './TripStore.ts';
+import { store, setDescription } from './TripStore.ts';
 import { get, save } from './TripService.ts';
 
 export default function Trip({ route }: { route: any }): React.JSX.Element {
@@ -15,7 +15,7 @@ export default function Trip({ route }: { route: any }): React.JSX.Element {
     save(trip);
     navigation.goBack();
   };
-  const { trip, setDescription } = store.getState();
+  const { trip } = store.getState();
 
   return (
     <View>

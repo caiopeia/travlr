@@ -15,19 +15,14 @@ export type State = {
   trip: Trip | null,
 }
 
-type Action = {
-  // FIXME Te actions are so far used as service functions, but they are really just setters. 
-  // We should move them to the TripStore and rename them to setX, addX, removeX etc. 
-  // Then we can have the service functions in the TripService.ts file that call these setters 
-  // and also contain any business logic if needed.
-  setDescription: (description: Trip['description']) => void,
-}
-
-export const store = create<State & Action>(() => ({
+export const store = create<State>(() => ({
   trip: null,
-  setDescription: (description) => store.setState((state) => ({
-    trip: state.trip ? { ...state.trip, description } : null,
-  })),
+}));
+
+export const setDescription = (
+  description: Trip['description']
+) => store.setState((state) => ({
+  trip: state.trip ? { ...state.trip, description } : null,
 }));
 
 export const setTrip = (
