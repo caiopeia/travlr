@@ -16,6 +16,9 @@ cd ..
 npx react-native run-macos
 ```
 
+# Troubleshooting
+- [version helper for react native](https://react-native-community.github.io/upgrade-helper/)
+
 # Getting Started
 
 > **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
