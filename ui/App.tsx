@@ -8,12 +8,6 @@ import Trip from './src/trips/TripComponent';
 import { createStaticNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-function TripsScreen() {
-  return (
-    <Trips />
-  );
-}
-
 const RootStack = createNativeStackNavigator({
   initialRouteName: 'Trips',
   screenOptions: {
@@ -22,7 +16,7 @@ const RootStack = createNativeStackNavigator({
   },
   screens: {
     Trips: {
-      screen: TripsScreen,
+      screen: Trips,
       options: {
         title: 'Trips',
       },

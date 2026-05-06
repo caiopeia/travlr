@@ -5,7 +5,7 @@ import { store } from './TripsStore.ts';
 import { getAll, deleteTrip, create, toggleCurrent } from './TripsService.ts';
 import { Button } from '@react-navigation/elements';
 
-export default function Trips() {
+export default function Trips(): React.JSX.Element {
   const navigation = useNavigation();
   store();
   useEffect(() => {
