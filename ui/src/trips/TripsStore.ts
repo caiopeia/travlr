@@ -1,19 +1,14 @@
 /**
  * - client side DTO model
  * - only simple getters and setters, adds and removes
- * - no (complex) business logic
+ * - no (complex) business logic or side effects
  */
 import { create } from 'zustand';
+import { Trip } from './TripStore';
 
 export type State = {
   trips: Trip[],
   current: number | null,
-}
-
-export type Trip = {
-  id: number | null,
-  name: string,
-  description: string,
 }
 
 export const store = create<State>(() => ({

@@ -1,13 +1,21 @@
 import { useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, Pressable, Alert } from 'react-native';
-import { store } from './TripStore.ts';
-import { getAll, deleteTrip, create, toggleCurrent } from './TripService.ts';
+import { useNavigation } from '@react-navigation/native';
+import { store } from './TripsStore.ts';
+import { getAll, deleteTrip, create, toggleCurrent } from './TripsService.ts';
+import { Button } from '@react-navigation/elements';
 
 export default function Trips() {
+  const navigation = useNavigation();
   store();
   useEffect(() => {
-    getAll();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      console.log('Trips screen focused');
+      getAll();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
   const { trips, current } = store.getState();
 
   const handleDeletePress = (tripId: number) => {
@@ -55,6 +63,9 @@ export default function Trips() {
               {expanded && (
                 <View style={styles.itemBody}>
                   <Text>{item.description}</Text>
+                  <Button screen="Trip" params={{ id: item.id }}>
+                    Edit
+                  </Button>
                 </View>
               )}
             </View>
