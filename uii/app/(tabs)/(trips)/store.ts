@@ -12,21 +12,29 @@ export type Trip = {
 };
 
 export type State = {
-  trip: Trip | null,
+  trips: Trip[],
+  current: number | null,
 }
 
 export const store = create<State>(() => ({
-  trip: null,
+  trips: [],
+  current: null,
 }));
 
-export const setDescription = (
-  description: Trip['description']
-) => store.setState((state) => ({
-  trip: state.trip ? { ...state.trip, description } : null,
-}));
-
-export const setTrip = (
-  trip: Trip,
+export const setTrips = (
+  trips: Trip[],
 ) => store.setState({ 
-  trip: trip,
+  trips: trips,
 });
+
+export const addTrip = (
+  trip: Trip,
+) => store.setState((state) => ({
+  trips: [...state.trips, trip],
+}));
+
+export const setCurrent = (
+  current: (state: State) => number | null,
+) => store.setState(
+  (state) => ({ current: current(state) }),
+);

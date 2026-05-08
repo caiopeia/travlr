@@ -4,30 +4,39 @@
  */
 
 import axios from 'axios';
+import { setTrips, setCurrent } from './store';
 import { Trip } from './store';
-import { setTrip } from './store';
 
 const BASE_URL = 'http://localhost/api';
 
-export const get = async (id: number) => {
+export const getAll = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/trips/${id}`);
-    const trip: Trip = response.data;
-    setTrip(trip);
+    const response = await axios.get(`${BASE_URL}/trips`);
+    const trips: Trip[] = response.data;
+    setTrips(trips);
   } catch (error) {
     console.error('Failed to fetch trips:', error);
   }
 };
 
-export const save = async (trip: Trip) => {
+export const deleteTrip = async (tripId: number) => {
   try {
-    if (trip.id) {
-      await axios.put(`${BASE_URL}/trips/${trip.id}`, trip);
-    } else {
-      await axios.post(`${BASE_URL}/trips`, trip);
-    }
-    await get(trip.id!);
+    await axios.delete(`${BASE_URL}/trips/${tripId}`);
+    await getAll();
   } catch (error) {
-    console.error('Failed to save trip:', error);
+    console.error('Failed to delete trip:', error);
   }
+};
+
+export const create = async (trip: Trip) => {
+  try {
+    await axios.post(`${BASE_URL}/trips`, trip);
+    await getAll();
+  } catch (error) {
+    console.error('Failed to create trip:', error);
+  }
+};
+
+export const toggleCurrent = (id: number) => {
+  setCurrent(state => state.current === id ? null : id);
 };
