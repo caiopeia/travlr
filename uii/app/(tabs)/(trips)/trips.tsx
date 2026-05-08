@@ -4,7 +4,7 @@ import { Link } from 'expo-router';
 export default function Trips() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Your trips will appear here</Text>
+      <Text style={styles.text}>Your trips will appear here sf</Text>
     </View>
   );
 }
