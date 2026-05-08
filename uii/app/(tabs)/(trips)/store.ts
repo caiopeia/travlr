@@ -38,3 +38,5 @@ export const setCurrent = (
 ) => store.setState(
   (state) => ({ current: current(state) }),
 );
+
+export default store;

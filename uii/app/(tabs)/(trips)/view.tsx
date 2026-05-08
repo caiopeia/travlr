@@ -1,21 +1,10 @@
 import { Text, View, StyleSheet, FlatList } from 'react-native';
-import { Link, useNavigation } from 'expo-router';
-import { useEffect } from 'react';
-import { getAll } from './service'; 
-import { store } from './store';
+import { store } from './store.ts';
+
 
 export default function Trips() {
-  const navigation = useNavigation();
   const { trips } = store();
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      console.log('Trips screen focused');
-      getAll();
-    });
 
-    return unsubscribe;
-  }, [navigation]);
-  
   return (
     <View style={styles.container}>
       <FlatList data={trips}
