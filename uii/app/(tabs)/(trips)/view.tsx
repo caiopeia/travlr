@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, FlatList } from 'react-native';
+import { Text, View, StyleSheet, FlatList, Pressable } from 'react-native';
 import { create } from 'zustand';
 import axios from 'axios';
 import { useEffect } from 'react';
@@ -17,13 +17,14 @@ export type State = {
 }
 
 type Action = {
-  fetchTrips: () => Promise<void>;
+  fetch: () => Promise<void>,
+  create: () => Promise<void>,
 }
 
-export const useTrip = create<State & Action>((set) => ({
+export const useTrip = create<State & Action>((set, get) => ({
   trips: [],
   current: null,
-  fetchTrips: async () => {
+  fetch: async () => {
     try {
       const response = await axios.get(`${BASE_URL}/trips`);
       const trips: Trip[] = response.data;
@@ -35,13 +36,26 @@ export const useTrip = create<State & Action>((set) => ({
       console.error('Failed to fetch trips:', error);
     }
   },
+  create: async () => {
+    const newTrip = {
+      id: null,
+      name: `My exciting trip.`,
+      description: 'Created from UI button',
+    };
+    try {      
+      await axios.post(`${BASE_URL}/trips`, newTrip);
+      await get().fetch();
+    } catch (error) {
+      console.error('Failed to create trip:', error);
+    }
+  },
 }));
 
 export default function Trips() {
-  const { trips, fetchTrips } = useTrip();
+  const { trips, fetch, create } = useTrip();
   useEffect(() => {
-    fetchTrips();
-  }, [fetchTrips]);
+    fetch();
+  }, [fetch]);
 
   return (
     <View style={styles.container}>
@@ -52,7 +66,10 @@ export default function Trips() {
             <Text style={styles.text}>{trip.name}</Text>
           );
         }}
-      />  
+      />
+      <Pressable style={styles.createButton} onPress={create}>
+        <Text style={styles.createButtonText}>Create Trip</Text>
+      </Pressable>
     </View>
   );
 }
@@ -67,5 +84,14 @@ const styles = StyleSheet.create({
   text: {
     color: '#fff',
     marginBottom: 16,
+  },
+  createButton: {
+    backgroundColor: '#444',
+    padding: 10,
+    borderRadius: 5,
+  },
+  createButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
