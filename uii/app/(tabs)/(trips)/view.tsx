@@ -19,6 +19,8 @@ export type State = {
 type Action = {
   fetch: () => Promise<void>,
   create: () => Promise<void>,
+  deleteTrip: (id: number) => Promise<void>,
+  toggleCurrent: (id: number) => void,
 }
 
 export const useTrip = create<State & Action>((set, get) => ({
@@ -49,10 +51,21 @@ export const useTrip = create<State & Action>((set, get) => ({
       console.error('Failed to create trip:', error);
     }
   },
+  deleteTrip: async (id: number) => {
+    try {
+      await axios.delete(`${BASE_URL}/trips/${id}`);
+      await get().fetch();
+    } catch (error) {
+      console.error('Failed to delete trip:', error);
+    }
+  },
+  toggleCurrent: (id: number) => set((state) => ({
+    current: state.current === id ? null : id,
+  })),
 }));
 
 export default function Trips() {
-  const { trips, fetch, create } = useTrip();
+  const { trips, current, fetch, create, deleteTrip, toggleCurrent } = useTrip();
   useEffect(() => {
     fetch();
   }, [fetch]);
@@ -60,15 +73,30 @@ export default function Trips() {
   return (
     <View style={styles.container}>
       <FlatList data={trips}
+        style={{ width: '100%' }}
         keyExtractor={(_, index) => index.toString()}
-        renderItem={({ item: trip }) => {
+        renderItem={({ item }) => {
+          const expanded = current === item.id;
           return (
-            <Text style={styles.text}>{trip.name}</Text>
+            <View style={styles.itemContainer}>
+              <Pressable onPress={() => toggleCurrent(item.id!!)} style={styles.itemHeader}>
+                <Text style={styles.itemTitle}>{item.id} - {item.name}</Text>
+                <Text style={styles.expandHint}>{expanded ? '▲' : '▼'}</Text>
+              </Pressable>
+              {expanded && (
+                <View style={styles.text}>
+                  <Text style={styles.text}>{item.description}</Text>
+                  <Pressable onPress={() => deleteTrip(item.id!!)} style={styles.button}>
+                    <Text style={styles.buttonText}>Delete</Text>
+                  </Pressable>
+                </View>
+              )}
+            </View>
           );
         }}
       />
-      <Pressable style={styles.createButton} onPress={create}>
-        <Text style={styles.createButtonText}>Create Trip</Text>
+      <Pressable style={styles.button} onPress={create}>
+        <Text style={styles.buttonText}>Create Trip</Text>
       </Pressable>
     </View>
   );
@@ -85,13 +113,40 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginBottom: 16,
   },
-  createButton: {
+  button: {
     backgroundColor: '#444',
     padding: 10,
     borderRadius: 5,
   },
-  createButtonText: {
+  buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  itemContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  itemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  itemTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  expandHint: {
+    fontSize: 14,
+    color: '#fff',
   },
 });
