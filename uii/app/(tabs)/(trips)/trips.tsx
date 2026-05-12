@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, FlatList, Pressable } from 'react-native';
 import { create } from 'zustand';
 import axios from 'axios';
 import { useEffect } from 'react';
+import { Link } from 'expo-router';
 
 const BASE_URL = 'http://localhost/api';
 
@@ -86,6 +87,9 @@ export default function Trips() {
               {expanded && (
                 <View style={styles.text}>
                   <Text style={styles.text}>{item.description}</Text>
+                  <Link href={{ pathname: "/trip", params: { id: item.id } }} style={styles.button}>
+                    <Text style={styles.buttonText}>Edit</Text>
+                  </Link>
                   <Pressable onPress={() => deleteTrip(item.id!!)} style={styles.button}>
                     <Text style={styles.buttonText}>Delete</Text>
                   </Pressable>
