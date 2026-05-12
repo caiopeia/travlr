@@ -1,8 +1,8 @@
 import { Text, View, StyleSheet, FlatList, Pressable } from 'react-native';
 import { create } from 'zustand';
 import axios from 'axios';
-import { useEffect } from 'react';
-import { Link } from 'expo-router';
+import { useCallback } from 'react';
+import { Link, useFocusEffect } from 'expo-router';
 
 const BASE_URL = 'http://localhost/api';
 
@@ -67,9 +67,11 @@ export const useTrip = create<State & Action>((set, get) => ({
 
 export default function Trips() {
   const { trips, current, fetch, create, deleteTrip, toggleCurrent } = useTrip();
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
+  useFocusEffect(
+    useCallback(() => {
+      fetch();
+    }, [fetch])
+  );
 
   return (
     <View style={styles.container}>
