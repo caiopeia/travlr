@@ -22,8 +22,12 @@ export default function Trips() {
           return (
             <View style={styles.itemContainer}>
               <Pressable onPress={() => toggleCurrent(item.id!!)} style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{item.id} - {item.name}</Text>
-                <Text style={styles.expandHint}>{expanded ? '▲' : '▼'}</Text>
+                <Text style={expanded ? styles.expandedItemTitle : styles.itemTitle}>
+                  {item.id} - {item.name}
+                </Text>
+                <Text style={expanded ? styles.expandedExpandHint : styles.expandHint}>
+                  {expanded ? '▲' : '▼'}
+                </Text>
               </Pressable>
               {expanded && (
                 <View style={styles.text}>
@@ -75,8 +79,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#fff',
   },
+  expandedItemTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffd33d',
+  },
   expandHint: {
     fontSize: 14,
     color: '#fff',
+  },
+  expandedExpandHint: {
+    fontSize: 14,
+    color: '#ffd33d',
   },
 });
