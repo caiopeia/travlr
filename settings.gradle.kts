@@ -1,2 +1,2 @@
 rootProject.name = "travlr"
-include("backend", "cdk", "doc")
+include("backend", "cdk", "doc", "uii")
