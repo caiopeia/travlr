@@ -1,7 +1,6 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import axios from 'axios';
-
-const BASE_URL = 'http://localhost/api';
+import { BASE_URL } from '../../constants';
 
 // fixme - type is declared twice
 export type Trip = {

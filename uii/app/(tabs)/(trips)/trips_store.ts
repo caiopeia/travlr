@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 import { Trip } from './trip_store';
-
-const BASE_URL = 'http://localhost/api';
+import { BASE_URL } from '../../constants';
 
 export type State = {
   trips: Trip[],
