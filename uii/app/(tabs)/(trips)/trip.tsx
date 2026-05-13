@@ -1,8 +1,9 @@
-import { Text, View, TextInput, Pressable } from 'react-native';
+import { Text, View, TextInput } from 'react-native';
 import { create } from 'zustand';
 import axios from 'axios';
 import { useEffect } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
+import { Button } from '@/components/button';
 
 
 const BASE_URL = 'http://localhost/api';
@@ -79,20 +80,7 @@ export default function Trip(): React.JSX.Element {
               borderColor: '#aaa',
             }}
           />
-          <Pressable
-            onPress={() => saveAndBack(trip)}
-            style={{
-              backgroundColor: '#000000',
-              paddingVertical: 10,
-              paddingHorizontal: 20,
-              borderRadius: 4,
-              marginTop: 15,
-            }}
-          >
-            <Text style={{ color: '#ffffff', fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>
-              Save
-            </Text>
-          </Pressable>
+          <Button label="Save" onPress={() => saveAndBack(trip)} />
         </View>
       ) || (
         <View>

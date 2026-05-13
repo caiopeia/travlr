@@ -2,7 +2,8 @@ import { Text, View, StyleSheet, FlatList, Pressable } from 'react-native';
 import { create } from 'zustand';
 import axios from 'axios';
 import { useCallback } from 'react';
-import { Link, useFocusEffect } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
+import { Button, LinkedButton } from '@/components/button';
 
 const BASE_URL = 'http://localhost/api';
 
@@ -75,7 +76,7 @@ export default function Trips() {
 
   return (
     <View style={styles.container}>
-      <FlatList data={trips}
+      <FlatList data={trips.sort((a, b) => a.id!! - b.id!!)}
         style={{ width: '100%' }}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => {
@@ -89,21 +90,15 @@ export default function Trips() {
               {expanded && (
                 <View style={styles.text}>
                   <Text style={styles.text}>{item.description}</Text>
-                  <Link href={{ pathname: "/trip", params: { id: item.id } }} style={styles.button}>
-                    <Text style={styles.buttonText}>Edit</Text>
-                  </Link>
-                  <Pressable onPress={() => deleteTrip(item.id!!)} style={styles.button}>
-                    <Text style={styles.buttonText}>Delete</Text>
-                  </Pressable>
+                  <LinkedButton label="Edit" href={{ pathname: "/trip", params: { id: item.id } }} />
+                  <Button label="Delete" onPress={() => deleteTrip(item.id!!)} />
                 </View>
               )}
             </View>
           );
         }}
       />
-      <Pressable style={styles.button} onPress={create}>
-        <Text style={styles.buttonText}>Create Trip</Text>
-      </Pressable>
+      <Button label="Create Trip" onPress={create} />
     </View>
   );
 }
@@ -118,15 +113,6 @@ const styles = StyleSheet.create({
   text: {
     color: '#fff',
     marginBottom: 16,
-  },
-  button: {
-    backgroundColor: '#444',
-    padding: 10,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
   },
   item: {
     flexDirection: 'row',

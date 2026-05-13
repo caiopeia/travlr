@@ -1,15 +1,12 @@
 import { View, StyleSheet } from 'react-native';
 import { Link } from 'expo-router';
+import { LinkedButton } from '@/components/button';
 
 export default function Index() {
   return (
     <View style={styles.container}>
-      <Link href="/(trips)" style={styles.button}>
-        Trips
-      </Link>
-      <Link href="/about" style={styles.button}>
-        About
-      </Link>
+      <LinkedButton label="Trips" href="/(trips)" />
+      <LinkedButton label="About" href="/about" />
     </View>
   );
 }
@@ -20,10 +17,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#25292e',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  button: {
-    fontSize: 20,
-    textDecorationLine: 'underline',
-    color: '#fff',
   },
 });
