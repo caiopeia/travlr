@@ -1,73 +1,11 @@
 import { Text, View, StyleSheet, FlatList, Pressable } from 'react-native';
-import { create } from 'zustand';
-import axios from 'axios';
 import { useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { Button, LinkedButton } from '@/components/button';
-
-const BASE_URL = 'http://localhost/api';
-
-export type Trip = {
-  id: number | null;
-  name: string;
-  description: string;
-};
-
-export type State = {
-  trips: Trip[],
-  current: number | null,
-}
-
-type Action = {
-  fetch: () => Promise<void>,
-  create: () => Promise<void>,
-  deleteTrip: (id: number) => Promise<void>,
-  toggleCurrent: (id: number) => void,
-}
-
-export const useTrip = create<State & Action>((set, get) => ({
-  trips: [],
-  current: null,
-  fetch: async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/trips`);
-      const trips: Trip[] = response.data;
-      set((state) => ({ 
-        trips: trips, 
-        current: state.current,
-      }));
-    } catch (error) {
-      console.error('Failed to fetch trips:', error);
-    }
-  },
-  create: async () => {
-    const newTrip = {
-      id: null,
-      name: `My exciting trip.`,
-      description: 'Created from UI button',
-    };
-    try {      
-      await axios.post(`${BASE_URL}/trips`, newTrip);
-      await get().fetch();
-    } catch (error) {
-      console.error('Failed to create trip:', error);
-    }
-  },
-  deleteTrip: async (id: number) => {
-    try {
-      await axios.delete(`${BASE_URL}/trips/${id}`);
-      await get().fetch();
-    } catch (error) {
-      console.error('Failed to delete trip:', error);
-    }
-  },
-  toggleCurrent: (id: number) => set((state) => ({
-    current: state.current === id ? null : id,
-  })),
-}));
+import { useTrips } from './trips_store';
 
 export default function Trips() {
-  const { trips, current, fetch, create, deleteTrip, toggleCurrent } = useTrip();
+  const { trips, current, fetch, create, deleteTrip, toggleCurrent } = useTrips();
   useFocusEffect(
     useCallback(() => {
       fetch();
