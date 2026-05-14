@@ -1,4 +1,4 @@
-import { create, StoreApi, UseBoundStore } from 'zustand';
+import { create } from 'zustand';
 import axios from 'axios';
 import { BASE_URL } from '../../constants';
 
@@ -15,6 +15,8 @@ export type TripUpdate = {
 
 export type State = {
   trip: Trip | null,
+  descriptionEditorVisible: boolean,
+  descriptionEditorValue: string,
 }
 
 export type Action = {
@@ -22,17 +24,21 @@ export type Action = {
   patch: (id: number, update: TripUpdate) => Promise<void>,
   update: (trip: Trip) => Promise<void>,
   setDescription: (description: string) => void,
+  setDescriptionEditorVisible: (visible: boolean) => void,
+  setDescriptionEditorValue: (value: string) => void,
 }
 
 export const useTripStore = create<State & Action>((set, get) => ({
     trip: null,
+    descriptionEditorVisible: false,
+    descriptionEditorValue: '',
     fetch: async (id: number) => {
         try {
-        const response = await axios.get(`${BASE_URL}/trips/${id}`);
-        const trip: Trip = response.data;
-        set((state) => ({ 
-            trip: trip,
-        }));
+            const response = await axios.get(`${BASE_URL}/trips/${id}`);
+            const trip: Trip = response.data;
+            set((state) => ({ 
+                trip: trip,
+            }));
         } catch (error) {
             console.error('Failed to fetch trips:', error);
         }
@@ -40,10 +46,14 @@ export const useTripStore = create<State & Action>((set, get) => ({
     patch: async (id: number, update: TripUpdate) => {
         if (!id) return;
         try {
-            await axios.patch(`${BASE_URL}/trips/${id}`, {
+            const response = await axios.patch(`${BASE_URL}/trips/${id}`, {
                 name: update.name,
                 description: update.description,
             });
+            const updatedTrip: Trip = response.data;
+            set((state) => ({
+                trip: updatedTrip,
+            }));
         } catch (error) {
             console.error('Failed to patch trip:', error);
         }
@@ -59,6 +69,16 @@ export const useTripStore = create<State & Action>((set, get) => ({
     setDescription: (description: string) => {
         set((state) => ({
             trip: state.trip ? { ...state.trip, description } : null,
+        }));
+    },
+    setDescriptionEditorVisible: (visible: boolean) => {
+        set((state) => ({
+            descriptionEditorVisible: visible,
+        }));
+    },
+    setDescriptionEditorValue: (value: string) => {
+        set((state) => ({
+            descriptionEditorValue: value,
         }));
     },
 }));

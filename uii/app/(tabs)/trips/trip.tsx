@@ -4,40 +4,82 @@ import { useLocalSearchParams } from 'expo-router';
 import { useTripStore } from './trip_store';
 import { useLayoutEffect } from 'react';
 import { useNavigation } from 'expo-router';
+import { TextAreaEditor } from '@/components/text-area-editor';
+import { Button } from '@/components/button';
 
 export default function Trip(): React.JSX.Element {
   const navigation = useNavigation();
   const { id } = useLocalSearchParams();
-  const { trip, fetch, patch, setDescription } = useTripStore();
+  const { 
+    trip, fetch, patch, 
+    descriptionEditorVisible, setDescriptionEditorVisible, 
+    descriptionEditorValue, setDescriptionEditorValue, 
+  } = useTripStore();
+  
   
   useEffect(() => {
     fetch(Number(id!!));
   }, [fetch]);
+  
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: trip?.name || 'Loading...',
+      title: trip?.name ?? 'Loading...',
     });
-  }, [navigation, trip?.name]);
+  }, [navigation, trip]);
 
+  
   const onChangeDescription = (value: string) => {
-    setDescription(value);
-    patch(trip?.id!!, { description: value });
+    setDescriptionEditorValue(value);
   };
+
+  const onOpenDescriptionEditor = () => {
+    if(!trip) return;
+    setDescriptionEditorValue(trip.description);
+    setDescriptionEditorVisible(true);
+  };
+
+  const onCancelDescriptionEditor = () => {
+    setDescriptionEditorVisible(false);
+    setDescriptionEditorValue('');
+  };
+
+  const onSaveDescriptionEditor = () => {
+    if(!trip) return;
+    patch(trip.id!!, { description: descriptionEditorValue });
+    setDescriptionEditorValue('');
+    setDescriptionEditorVisible(false);
+  }
 
   return (
     <View>
       {trip && (
         <View>
-          <TextInput
-            value={trip.description}
+          <View>
+            <TextInput
+              value={trip.description}
+              editable={false}
+              multiline
+              style={{
+                borderWidth: 1,
+                borderColor: '#aaa',
+                height: 140,
+                padding: 10,
+                textAlignVertical: 'top',
+              }}
+            />
+            <View style={{ flexDirection: 'row' }}>
+              <Button label="Edit Description" onPress={onOpenDescriptionEditor} />
+            </View>
+          </View>
+          <TextAreaEditor 
+            title="Edit Description"
+            placeholder = "Enter a description..."
+            isVisible={descriptionEditorVisible} 
+            onCancel={onCancelDescriptionEditor}
+            onSave={onSaveDescriptionEditor}
+            value={descriptionEditorValue}
             onChangeText={onChangeDescription}
-            placeholder="Enter trip description"
-            editable={true}
-            style={{
-              borderWidth: 1,
-              borderColor: '#aaa',
-            }}
           />
         </View>
       ) || (
