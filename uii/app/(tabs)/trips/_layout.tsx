@@ -8,6 +8,7 @@ export default function RootLayout() {
       }} />
       <Stack.Screen name="trip" options={{
         headerShown: true,
+        headerBackTitle: 'Trips',
       }} />
     </Stack>
   );

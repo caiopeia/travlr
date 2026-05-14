@@ -1,5 +1,4 @@
 import { View, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
 import { LinkedButton } from '@/components/button';
 
 export default function Index() {
