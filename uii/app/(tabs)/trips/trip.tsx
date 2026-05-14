@@ -30,8 +30,6 @@ export default function Trip(): React.JSX.Element {
     <View>
       {trip && (
         <View>
-          <Text>{trip.id}</Text>
-          <Text>{trip.name}</Text>
           <TextInput
             value={trip.description}
             onChangeText={(value) => setDescription(value)}
