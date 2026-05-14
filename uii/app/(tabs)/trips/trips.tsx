@@ -32,7 +32,7 @@ export default function Trips() {
               {expanded && (
                 <View style={styles.text}>
                   <Text style={styles.text}>{item.description}</Text>
-                  <LinkedButton label="Edit" href={{ pathname: "/trip", params: { id: item.id } }} />
+                  <LinkedButton label="Edit" href={{ pathname: "/trips/trip", params: { id: item.id } }} />
                   <Button label="Delete" onPress={() => deleteTrip(item.id!!)} />
                 </View>
               )}

@@ -5,7 +5,7 @@ import { LinkedButton } from '@/components/button';
 export default function Index() {
   return (
     <View style={styles.container}>
-      <LinkedButton label="Trips" href="/(trips)" />
+      <LinkedButton label="Trips" href="/trips/trips" />
       <LinkedButton label="About" href="/about" />
     </View>
   );
