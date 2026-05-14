@@ -29,6 +29,18 @@ class TripController(
         @RequestBody trip: Trip,
     ): Mono<Trip> = tripRepository.save(trip.copy(id = id))
 
+    @PatchMapping("/{id}")
+    fun patch(
+        @PathVariable id: Long,
+        @RequestBody patch: TripUpdate,
+    ): Mono<Trip> = tripRepository.findById(id)
+            .flatMap { trip ->
+                tripRepository.save(trip.copy(
+                    name = patch.name ?: trip.name,
+                    description = patch.description ?: trip.description,
+                ))
+            }
+
     @DeleteMapping("/{id}")
     fun delete(
         @PathVariable id: Long,

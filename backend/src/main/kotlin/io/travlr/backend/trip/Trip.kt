@@ -24,3 +24,8 @@ data class Trip(
         return Objects.hash(name)
     }
 }
+
+data class TripUpdate(
+    val name: String? = null,
+    val description: String? = null,
+)

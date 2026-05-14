@@ -125,6 +125,56 @@ class TripIT(
     }
 
     @Test
+    fun `patch description`() {
+        val existing: Trip = tripRepository.save(
+            Trip(
+                name = "Central America",
+                description = "My trip to Central America",
+            )
+        ).block()!!
+        val patch = TripUpdate(
+            description = "My trip to Australia",
+        )
+
+        val result: Trip = webTestClient.patch()
+            .uri("/api/trips/{id}", existing.id)
+            .bodyValue(patch)
+            .exchange()
+            .expectStatus().isOk
+            .returnResult(Trip::class.java)
+            .responseBody.single().block()!!
+
+        assertThat(result.id).isEqualTo(existing.id)
+        assertThat(result.name).isEqualTo(existing.name)
+        assertThat(result.description).isEqualTo(patch.description)
+    }
+
+    @Test
+    fun `patch name`() {
+        val existing: Trip = tripRepository.save(
+            Trip(
+                name = "Central America",
+                description = "My trip to Central America",
+            )
+        ).block()!!
+        val patch = TripUpdate(
+            name = "Australia",
+        )
+
+        val result: Trip = webTestClient.patch()
+            .uri("/api/trips/{id}", existing.id)
+            .bodyValue(patch)
+            .exchange()
+            .expectStatus().isOk
+            .returnResult(Trip::class.java)
+            .responseBody.single().block()!!
+
+        assertThat(result.id).isEqualTo(existing.id)
+        assertThat(result.name).isEqualTo(patch.name)
+        assertThat(result.description).isEqualTo(existing.description)
+    }
+
+    @Test
     fun `delete`() {
         val cut: Trip = tripRepository.save(
             Trip(
