@@ -1,7 +1,6 @@
 import { Text, View, TextInput } from 'react-native';
 import { useEffect } from 'react';
-import { useLocalSearchParams, router } from 'expo-router';
-import { Button } from '@/components/button';
+import { useLocalSearchParams } from 'expo-router';
 import { useTripStore } from './trip_store';
 import { useLayoutEffect } from 'react';
 import { useNavigation } from 'expo-router';
@@ -9,7 +8,7 @@ import { useNavigation } from 'expo-router';
 export default function Trip(): React.JSX.Element {
   const navigation = useNavigation();
   const { id } = useLocalSearchParams();
-  const { trip, fetch, update, setDescription, patch } = useTripStore();
+  const { trip, fetch, patch, setDescription } = useTripStore();
   
   useEffect(() => {
     fetch(Number(id!!));
@@ -20,11 +19,6 @@ export default function Trip(): React.JSX.Element {
       title: trip?.name || 'Loading...',
     });
   }, [navigation, trip?.name]);
-
-  const saveAndBack = (trip: any) => {
-    update(trip);
-    router.back();
-  };
 
   const onChangeDescription = (value: string) => {
     setDescription(value);
@@ -45,7 +39,6 @@ export default function Trip(): React.JSX.Element {
               borderColor: '#aaa',
             }}
           />
-          <Button label="Save" onPress={() => saveAndBack(trip)} />
         </View>
       ) || (
         <View>

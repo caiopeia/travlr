@@ -48,6 +48,7 @@ export const useTripStore = create<State & Action>((set, get) => ({
             console.error('Failed to patch trip:', error);
         }
     },
+    // todo - remove this action and use patch instead, if it ll not get used in the future
     update: async (trip: Trip) => {
         try {      
             await axios.put(`${BASE_URL}/trips/${trip.id}`, trip);
