@@ -9,7 +9,7 @@ import { useNavigation } from 'expo-router';
 export default function Trip(): React.JSX.Element {
   const navigation = useNavigation();
   const { id } = useLocalSearchParams();
-  const { trip, fetch, update, setDescription } = useTripStore();
+  const { trip, fetch, update, setDescription, patch } = useTripStore();
   
   useEffect(() => {
     fetch(Number(id!!));
@@ -26,13 +26,18 @@ export default function Trip(): React.JSX.Element {
     router.back();
   };
 
+  const onChangeDescription = (value: string) => {
+    setDescription(value);
+    patch(trip?.id!!, { description: value });
+  };
+
   return (
     <View>
       {trip && (
         <View>
           <TextInput
             value={trip.description}
-            onChangeText={(value) => setDescription(value)}
+            onChangeText={onChangeDescription}
             placeholder="Enter trip description"
             editable={true}
             style={{
